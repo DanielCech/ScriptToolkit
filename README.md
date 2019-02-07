@@ -1,2 +1,2 @@
 # ScriptToolkit
-Package of common tools for SwiftScripts
+Package of common tools for ScriptToolkit
