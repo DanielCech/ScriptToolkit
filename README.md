@@ -1,2 +1,3 @@
 # ScriptToolkit
-Package of common tools for ScriptToolkit
+
+A description of this package.
