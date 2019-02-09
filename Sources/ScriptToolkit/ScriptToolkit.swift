@@ -64,3 +64,21 @@ public func tag(_ item: String, copy: Bool) throws {
         }
     }
 }
+
+public func flattenFolderStructure(inputDir: String, outputDir: String) throws {
+    let inputFolder = try Folder(path: inputDir)
+    let outputFolder = try Folder(path: outputDir)
+
+    let inputFolderPath = inputFolder.path
+    let index = inputFolderPath.index(inputFolderPath.startIndex, offsetBy: inputFolderPath.count)
+
+    try inputFolder.makeSubfolderSequence(recursive: true).forEach { folder in
+        let folderPath = folder.path[index...]
+        let folderPrefix = folderPath.replacingOccurrences(of: "/", with: " ")
+
+        for file in folder.files {
+            try file.rename(to: folderPrefix + " " + file.name, keepExtension: true)
+            try file.move(to: outputFolder)
+        }
+    }
+}
