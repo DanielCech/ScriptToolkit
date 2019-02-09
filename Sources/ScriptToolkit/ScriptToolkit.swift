@@ -37,8 +37,17 @@ public extension File {
     }
 }
 
+func fileModificationDate(_ file: String) throws -> Date  {
+
+    let fileAttributes = try FileManager.default.attributesOfItem(atPath: file) as [FileAttributeKey: Any]
+    let modificationDate = fileAttributes[.modificationDate] as! Date
+
+    return modificationDate
+}
+
 public func tag(_ item: String, copy: Bool) throws {
-    let suffix = ScriptToolkit.dateFormatter.string(from: Date())
+    let date = try fileModificationDate(item)
+    let suffix = ScriptToolkit.dateFormatter.string(from: date)
     for letter in "abcdefghijklmnopqrstuvwxyz" {
         let file = try File(path: item)
         let newPath = (file.parent?.path ?? "./")
