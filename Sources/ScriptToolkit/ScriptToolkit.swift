@@ -10,7 +10,7 @@ public struct ScriptToolkit {
 }
 
 public extension File {
-    public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws {
+    @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> File {
         guard let parent = parent else {
             throw OperationError.renameFailed(self)
         }
@@ -31,6 +31,7 @@ public extension File {
 
         do {
             try FileManager.default.copyItem(atPath: path, toPath: newPath)
+            return try File(path: newPath)
         } catch {
             throw OperationError.renameFailed(self)
         }
@@ -65,7 +66,7 @@ public func tag(_ item: String, copy: Bool) throws {
     }
 }
 
-public func flattenFolderStructure(inputDir: String, outputDir: String) throws {
+public func flattenFolderStructure(inputDir: String, outputDir: String, move: Bool) throws {
     let inputFolder = try Folder(path: inputDir)
     let outputFolder = try Folder(path: outputDir)
 
@@ -77,8 +78,15 @@ public func flattenFolderStructure(inputDir: String, outputDir: String) throws {
         let folderPrefix = folderPath.replacingOccurrences(of: "/", with: " ")
 
         for file in folder.files {
-            try file.rename(to: folderPrefix + " " + file.name, keepExtension: true)
-            try file.move(to: outputFolder)
+            if move {
+                try file.rename(to: folderPrefix + " " + file.name, keepExtension: true)
+
+            }
+            else {
+                let newFile = try file.createDuplicate(withName: folderPrefix + " " + file.name, keepExtension: true)
+                try newFile.move(to: outputFolder)
+            }
+
         }
     }
 }
