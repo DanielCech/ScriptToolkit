@@ -39,6 +39,7 @@ public extension File {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // MARK: - Helpers
 
 public func fileModificationDate(_ file: String) throws -> Date  {
@@ -63,6 +64,7 @@ func matches(for regex: String, in text: String) -> [String] {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // MARK: - Features
 
 public func tag(_ item: String, copy: Bool) throws {
@@ -84,6 +86,9 @@ public func tag(_ item: String, copy: Bool) throws {
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Flatten folder structure
 
 public func flattenFolderStructure(inputDir: String, outputDir: String, move: Bool) throws {
     let inputFolder = try Folder(path: inputDir)
@@ -109,6 +114,9 @@ public func flattenFolderStructure(inputDir: String, outputDir: String, move: Bo
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// MARK: - Sort Photos
 
 public func exifTool(inputDir: String, byCameraModel: Bool, processM4V: Bool) throws {
     let inputFolder = try Folder(path: inputDir)
@@ -230,6 +238,18 @@ public func organizePhotos(inputDir: String) throws {
             try incorporateFile(file, using: folderRecords)
         }
     }
+}
 
-    print("✅ Done")
+////////////////////////////////////////////////////////////////////////////////
+// MARK: - Remove Empty Directories
+
+public func removeEmptyDirectories(in folder: Folder) throws {
+    for subfolder in folder.subfolders {
+        try removeEmptyDirectories(in: subfolder)
+    }
+
+    if folder.subfolders.count == 0 && folder.files.count == 0 {
+        print("removed: \(folder.path)")
+        try folder.delete()
+    }
 }
