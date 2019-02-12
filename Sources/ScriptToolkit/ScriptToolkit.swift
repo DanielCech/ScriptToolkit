@@ -39,6 +39,8 @@ public extension File {
     }
 }
 
+// MARK: - Helpers
+
 public func fileModificationDate(_ file: String) throws -> Date  {
 
     let fileAttributes = try FileManager.default.attributesOfItem(atPath: file) as [FileAttributeKey: Any]
@@ -46,6 +48,22 @@ public func fileModificationDate(_ file: String) throws -> Date  {
 
     return modificationDate
 }
+
+func matches(for regex: String, in text: String) -> [String] {
+    do {
+        let regex = try NSRegularExpression(pattern: regex)
+        let results = regex.matches(in: text,
+                                    range: NSRange(text.startIndex..., in: text))
+        return results.map {
+            String(text[Range($0.range, in: text)!])
+        }
+    } catch let error {
+        print("invalid regex: \(error.localizedDescription)")
+        return []
+    }
+}
+
+// MARK: - Features
 
 public func tag(_ item: String, copy: Bool) throws {
     let date = try fileModificationDate(item)
@@ -108,16 +126,39 @@ public func exifTool(inputDir: String) throws {
     }
 }
 
+func incorporateFile(_ file: File, using folderRecords: [(Folder, [Int])]) {
+    let numberString = file.nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
+    var lastMaximum: Int?
+    if let number = Int(numberString) {
+
+        for folderRecord in folderRecords {
+            if let firstIndex = folderRecord.1.first, let lastIndex = folderRecord.1.last, number >= firstIndex, number <= lastIndex {
+                try file.move(to: folderRecord.0)
+                break
+            }
+
+            if let unwrappedLastMaximum = lastMaximum, let firstIndex = folderRecord.1.first, unwrappedLastMaximum <= number, firstIndex >= number {
+                try file.move(to: folderRecord.0)
+                break
+            }
+
+            lastMaximum = folderRecord.1.last
+        }
+    }
+    else {
+        main.stderror.print("\(file.name): unable to process")
+    }
+}
+
 public func organizePhotos(inputDir: String) throws {
     print("📂 Organizing...")
 
     let inputFolder = try Folder(path: inputDir)
     var folderRecords = [(Folder, [Int])]()
-    let regex = try? NSRegularExpression(pattern: "", options: .caseInsensitive)
 
     let sortedSubfolders = inputFolder
         .subfolders
-        .filter { }
+        .filter { !matches(for: "^\\d\\d\\d\\d-\\d\\d-\\d\\d.*$", in: $0.name).isEmpty }
         .sorted { $0.name < $1.name }
 
     for dir in sortedSubfolders {
@@ -129,26 +170,16 @@ public func organizePhotos(inputDir: String) throws {
     }
 
     for file in inputFolder.files {
-        let numberString = file.nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
-        var lastMaximum: Int?
-        if let number = Int(numberString) {
+        incorporateFile(file, using: folderRecords)
+    }
 
-            for folderRecord in folderRecords {
-                if let firstIndex = folderRecord.1.first, let lastIndex = folderRecord.1.last, number >= firstIndex, number <= lastIndex {
-                    try file.move(to: folderRecord.0)
-                    break
-                }
+    let originalFolders = inputFolders
+        .subfolders
+        .filter { matches(for: "^\\d\\d\\d\\d-\\d\\d-\\d\\d.*$", in: $0.name).isEmpty }
 
-                if let unwrappedLastMaximum = lastMaximum, let firstIndex = folderRecord.1.first, unwrappedLastMaximum <= number, firstIndex >= number {
-                    try file.move(to: folderRecord.0)
-                    break
-                }
-
-                lastMaximum = folderRecord.1.last
-            }
-        }
-        else {
-            main.stderror.print("\(file.name): unable to process")
+    for dir in originalFolders {
+        for file in dir.makeFileSequence(recursive: true, includeHidden: true) {
+            incorporateFile(file, using: folderRecords)
         }
     }
 
