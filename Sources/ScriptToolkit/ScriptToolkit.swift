@@ -1,5 +1,6 @@
 import Foundation
 import Files
+import SwiftShell
 
 public struct ScriptToolkit {
     public static let dateFormatter: DateFormatter = {
@@ -38,7 +39,7 @@ public extension File {
     }
 }
 
-func fileModificationDate(_ file: String) throws -> Date  {
+public func fileModificationDate(_ file: String) throws -> Date  {
 
     let fileAttributes = try FileManager.default.attributesOfItem(atPath: file) as [FileAttributeKey: Any]
     let modificationDate = fileAttributes[.modificationDate] as! Date
@@ -89,4 +90,57 @@ public func flattenFolderStructure(inputDir: String, outputDir: String, move: Bo
 
         }
     }
+}
+
+public func exifTool(inputDir: String) throws {
+    let inputFolder = try Folder(path: inputDir)
+
+    // Process dirs using exiftool
+    for dir in inputFolder.subfolders {
+        print("dir: \(dir.name)")
+        try runAndPrint("/usr/local/bin/exiftool","-Directory<DateTimeOriginal", "-d", "%Y-%m-%d \(dir.name)", dir.path)
+    }
+
+    // Process files using exiftool
+    for file in inputFolder.files {
+        print("file: \(file.name)")
+        try runAndPrint("/usr/local/bin/exiftool" ,"-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
+    }
+
+    var folderRecords = [(Folder, [Int])]()
+
+    let sortedSubfolders = inputFolder.subfolders.sorted { $0.name < $1.name }
+
+    for dir in sortedSubfolders {
+        let indexes = dir.files
+            .map { $0.nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "") }
+            .compactMap { Int($0) }
+            .sorted()
+        folderRecords.append((dir, indexes))
+    }
+
+    for file in inputFolder.files {
+        let numberString = file.nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
+        var lastMaximum: Int?
+        if let number = Int(numberString) {
+
+            for folderRecord in folderRecords {
+                if let firstIndex = folderRecord.1.first, let lastIndex = folderRecord.1.last, number >= firstIndex, number <= lastIndex {
+                    try file.move(to: folderRecord.0)
+                    break
+                }
+
+                if let unwrappedLastMaximum = lastMaximum, let firstIndex = folderRecord.1.first, unwrappedLastMaximum <= number, firstIndex >= number {
+                    try file.move(to: folderRecord.0)
+                    break
+                }
+
+                lastMaximum = folderRecord.1.last
+            }
+        }
+        else {
+            print("\(file.name): unable to process")
+        }
+    }
+
 }
