@@ -117,16 +117,16 @@ public func exifTool(inputDir: String) throws {
 
     // Process dirs using exiftool
     for dir in inputFolder.subfolders {
-        try run("/usr/local/bin/exiftool","-Directory<DateTimeOriginal", "-d", "%Y-%m-%d \(dir.name)", dir.path)
+        run("/usr/local/bin/exiftool","-Directory<DateTimeOriginal", "-d", "%Y-%m-%d \(dir.name)", dir.path)
     }
 
     // Process files using exiftool
     for file in inputFolder.files {
-        try run("/usr/local/bin/exiftool" ,"-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
+        run("/usr/local/bin/exiftool" ,"-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
     }
 }
 
-func incorporateFile(_ file: File, using folderRecords: [(Folder, [Int])]) {
+func incorporateFile(_ file: File, using folderRecords: [(Folder, [Int])]) throws {
     let numberString = file.nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
     var lastMaximum: Int?
     if let number = Int(numberString) {
@@ -170,16 +170,16 @@ public func organizePhotos(inputDir: String) throws {
     }
 
     for file in inputFolder.files {
-        incorporateFile(file, using: folderRecords)
+        try incorporateFile(file, using: folderRecords)
     }
 
-    let originalFolders = inputFolders
+    let originalFolders = inputFolder
         .subfolders
         .filter { matches(for: "^\\d\\d\\d\\d-\\d\\d-\\d\\d.*$", in: $0.name).isEmpty }
 
     for dir in originalFolders {
         for file in dir.makeFileSequence(recursive: true, includeHidden: true) {
-            incorporateFile(file, using: folderRecords)
+            try incorporateFile(file, using: folderRecords)
         }
     }
 
