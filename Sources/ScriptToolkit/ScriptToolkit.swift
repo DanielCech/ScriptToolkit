@@ -95,17 +95,19 @@ public func flattenFolderStructure(inputDir: String, outputDir: String, move: Bo
 public func exifTool(inputDir: String) throws {
     let inputFolder = try Folder(path: inputDir)
 
+    print("📷 Processing EXIFtool...")
+
     // Process dirs using exiftool
     for dir in inputFolder.subfolders {
-        print("dir: \(dir.name)")
-        try runAndPrint("/usr/local/bin/exiftool","-Directory<DateTimeOriginal", "-d", "%Y-%m-%d \(dir.name)", dir.path)
+        try run("/usr/local/bin/exiftool","-Directory<DateTimeOriginal", "-d", "%Y-%m-%d \(dir.name)", dir.path)
     }
 
     // Process files using exiftool
     for file in inputFolder.files {
-        print("file: \(file.name)")
-        try runAndPrint("/usr/local/bin/exiftool" ,"-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
+        try run("/usr/local/bin/exiftool" ,"-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
     }
+
+    print("📂 Organizing...")
 
     var folderRecords = [(Folder, [Int])]()
 
@@ -139,8 +141,9 @@ public func exifTool(inputDir: String) throws {
             }
         }
         else {
-            print("\(file.name): unable to process")
+            main.stderror.print("\(file.name): unable to process")
         }
     }
 
+    print("✅ Done")
 }
