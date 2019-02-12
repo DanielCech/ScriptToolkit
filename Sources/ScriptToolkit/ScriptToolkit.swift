@@ -106,12 +106,19 @@ public func exifTool(inputDir: String) throws {
     for file in inputFolder.files {
         try run("/usr/local/bin/exiftool" ,"-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
     }
+}
 
+public func organizePhotos(inputDir: String) throws {
     print("📂 Organizing...")
 
+    let inputFolder = try Folder(path: inputDir)
     var folderRecords = [(Folder, [Int])]()
+    let regex = try? NSRegularExpression(pattern: "", options: .caseInsensitive)
 
-    let sortedSubfolders = inputFolder.subfolders.sorted { $0.name < $1.name }
+    let sortedSubfolders = inputFolder
+        .subfolders
+        .filter { }
+        .sorted { $0.name < $1.name }
 
     for dir in sortedSubfolders {
         let indexes = dir.files
