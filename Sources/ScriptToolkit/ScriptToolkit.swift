@@ -39,6 +39,37 @@ public extension File {
     }
 }
 
+public extension Folder {
+    @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> Folder {
+        guard let parent = parent else {
+            throw OperationError.renameFailed(self)
+        }
+
+        var newName = newName
+
+        if `extension` != nil {
+            if keepExtension {
+                if let `extension` = `extension` {
+                    let extensionString = ".\(`extension`)"
+
+                    if !newName.hasSuffix(extensionString) {
+                        newName += extensionString
+                    }
+                }
+            }
+        }
+
+        let newPath = parent.path + newName
+
+        do {
+            try FileManager.default.copyItem(atPath: path, toPath: newPath)
+            return try Folder(path: newPath)
+        } catch {
+            throw OperationError.renameFailed(self)
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // MARK: - Helpers
 
@@ -65,25 +96,54 @@ func matches(for regex: String, in text: String) -> [String] {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: - Features
+// MARK: - Tag file
 
 public func tag(_ item: String, copy: Bool) throws {
     let date = try fileModificationDate(item)
     let suffix = ScriptToolkit.dateFormatter.string(from: date)
     for letter in "abcdefghijklmnopqrstuvwxyz" {
-        let file = try File(path: item)
-        let newPath = (file.parent?.path ?? "./")
-        let newName = file.nameExcludingExtension + "(\(suffix + String(letter)))" + "." + (file.extension ?? "")
 
-        if !FileManager.default.fileExists(atPath: newPath + newName) {
-            if copy {
-                try file.createDuplicate(withName: newName)
+        switch FileManager.default.itemKind(atPath: item)! {
+
+        case .file:
+            let file = try File(path: item)
+            let newPath = (file.parent?.path ?? "./")
+            let newName = file.nameExcludingExtension + "(\(suffix + String(letter)))" + "." + (file.extension ?? "")
+
+            if !FileManager.default.fileExists(atPath: newPath + newName) {
+                if copy {
+                    try file.createDuplicate(withName: newName)
+                }
+                else {
+                    try file.rename(to: newName)
+                }
+                return
             }
-            else {
-                try file.rename(to: newName)
+
+        case .folder:
+            let folder = try Folder(path: item)
+            let newPath = (folder.parent?.path ?? "./")
+            var newName = folder.nameExcludingExtension + "(\(suffix + String(letter)))"
+
+            if let ext = folder.extension {
+                newName += "." + ext
             }
-            return
+
+            if !FileManager.default.fileExists(atPath: newPath + newName) {
+                if copy {
+                    try folder.createDuplicate(withName: newName)
+                }
+                else {
+                    try folder.rename(to: newName)
+                }
+                return
+            }
+
+
         }
+
+
+
     }
 }
 
