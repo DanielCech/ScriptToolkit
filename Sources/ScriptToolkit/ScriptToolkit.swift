@@ -98,19 +98,18 @@ public func flattenFolderStructure(inputDir: String, outputDir: String, move: Bo
     let index = inputFolderPath.index(inputFolderPath.startIndex, offsetBy: inputFolderPath.count)
 
     try inputFolder.makeSubfolderSequence(recursive: true).forEach { folder in
+        print("folder: \(folder), files: \(folder.files)")
         let folderPath = folder.path[index...]
         let folderPrefix = folderPath.replacingOccurrences(of: "/", with: " ")
 
         for file in folder.files {
             if move {
                 try file.rename(to: folderPrefix + " " + file.name, keepExtension: true)
-
             }
             else {
-                let newFile = try file.createDuplicate(withName: folderPrefix + " " + file.name, keepExtension: true)
-                try newFile.move(to: outputFolder)
+                let newFile = try file.copy(to: outputFolder)
+                try newFile.rename(to: folderPrefix + " " + file.name, keepExtension: true)
             }
-
         }
     }
 }
