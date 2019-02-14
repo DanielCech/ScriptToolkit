@@ -312,3 +312,11 @@ public func removeEmptyDirectories(in folder: Folder) throws {
         try folder.delete()
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// MARK: - Resize image
+
+
+public func resizeImage(original: String, newName: String, size: CGSize) {
+    run("/usr/local/bin/convert", original, "-resize", "\(size.width)x\(size.height)",newName)
+}
