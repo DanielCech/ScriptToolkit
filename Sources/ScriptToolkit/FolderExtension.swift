@@ -128,13 +128,12 @@ public extension Folder {
         }
     }
     
-    public func organizePhotos(inputDir: String) throws {
+    public func organizePhotos() throws {
         print("📂 Organizing...")
 
-        let inputFolder = try Folder(path: inputDir)
         var folderRecords = [(Folder, [Int])]()
 
-        let sortedSubfolders = inputFolder
+        let sortedSubfolders = self
             .subfolders
             .filter { !matches(for: "^\\d\\d\\d\\d-\\d\\d-\\d\\d.*$", in: $0.name).isEmpty }
             .sorted { $0.name < $1.name }
@@ -147,11 +146,11 @@ public extension Folder {
             folderRecords.append((dir, indexes))
         }
 
-        var originalFolders = inputFolder
+        var originalFolders = self
             .subfolders
             .filter { matches(for: "^\\d\\d\\d\\d-\\d\\d-\\d\\d.*$", in: $0.name).isEmpty }
 
-        originalFolders.append(inputFolder)
+        originalFolders.append(self)
 
         for folder in originalFolders {
             for file in folder.makeFileSequence(recursive: true, includeHidden: true) {
@@ -163,14 +162,14 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Remove Empty Directories
 
-    public func removeEmptyDirectories(in folder: Folder) throws {
-        for subfolder in folder.subfolders {
-            try removeEmptyDirectories(in: subfolder)
+    public func removeEmptyDirectories() throws {
+        for subfolder in subfolders {
+            try subfolder.removeEmptyDirectories()
         }
 
-        if folder.subfolders.count == 0 && folder.files.count == 0 {
-            print("removed: \(folder.path)")
-            try folder.delete()
+        if subfolders.count == 0 && files.count == 0 {
+            print("removed: \(path)")
+            try delete()
         }
     }
 }
