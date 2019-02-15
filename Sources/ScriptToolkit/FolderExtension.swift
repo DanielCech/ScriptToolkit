@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Files
 
 public extension Folder {
     @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> Folder {
@@ -37,3 +38,4 @@ public extension Folder {
         }
     }
 }
+

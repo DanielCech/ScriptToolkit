@@ -3,11 +3,20 @@
     "pins": [
       {
         "package": "Files",
-        "repositoryURL": "https://github.com/JohnSundell/Files.git",
+        "repositoryURL": "https://github.com/DanielCech/Files.git",
         "state": {
           "branch": null,
-          "revision": "06f95bd1bf4f8d5f50bc6bb30b808c253acd4c88",
-          "version": "2.2.1"
+          "revision": "184d07f1cebdce4bc3de508f03761c7afa883bcd",
+          "version": "2.2.3"
+        }
+      },
+      {
+        "package": "Moderator",
+        "repositoryURL": "https://github.com/DanielCech/Moderator.git",
+        "state": {
+          "branch": null,
+          "revision": "0abc9e4d49ff3b96036ee387f629c2dff003baa7",
+          "version": "0.5.1"
         }
       },
       {

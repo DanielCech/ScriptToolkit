@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Files
 
 public extension File {
     @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> File {

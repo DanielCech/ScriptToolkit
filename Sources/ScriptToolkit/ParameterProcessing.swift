@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import SwiftShell
+import Moderator
 
 public protocol StringAssignable {
     mutating func assign(value: String) throws
