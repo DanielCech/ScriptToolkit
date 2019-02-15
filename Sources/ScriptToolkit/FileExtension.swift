@@ -96,7 +96,23 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Audio Processing
 
-    public func slowDownAudio(newName: String, size: CGSize) {
+    public func slowDownAudio(newName: String, size: CGSize) throws -> File {
         run("/usr/local/bin/sox", path, "-resize", "\(size.width)x\(size.height)",newName)
+        return try File(path: newName)
+    }
+
+    public func convertToWav(newName: String) throws -> File {
+        run("ffmpeg", "-i", path, "-sample_rate 44100", newName.deletingPathExtension + ".wav")
+        return try File(path: newName)
+    }
+
+    public func convertToM4A(newName: String) throws -> File {
+        run("ffmpeg", "-i", path, "-sample_rate 44100", newName.deletingPathExtension + ".m4a")
+        return try File(path: newName)
+    }
+
+    public func addSilence(newName: String) throws -> File {
+        run("sox", "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav", path, newName)
+        return try File(path: newName)
     }
 }
