@@ -43,14 +43,13 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Flatten folder structure
 
-    public func flattenFolderStructure(inputDir: String, outputDir: String, move: Bool) throws {
-        let inputFolder = try Folder(path: inputDir)
+    public func flattenFolderStructure(outputDir: String, move: Bool) throws {
         let outputFolder = try Folder(path: outputDir)
 
-        let inputFolderPath = inputFolder.path
+        let inputFolderPath = path
         let index = inputFolderPath.index(inputFolderPath.startIndex, offsetBy: inputFolderPath.count)
 
-        try inputFolder.makeSubfolderSequence(recursive: true).forEach { folder in
+        try makeSubfolderSequence(recursive: true).forEach { folder in
             print("folder: \(folder), files: \(folder.files)")
             let folderPath = folder.path[index...]
             let folderPrefix = folderPath.replacingOccurrences(of: "/", with: " ")
