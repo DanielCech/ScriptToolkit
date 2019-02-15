@@ -1,3 +1,10 @@
+//
+//  ScriptToolkit.swift
+//  ScriptToolkit
+//
+//  Created by Dan Cech on 15.02.2019.
+//
+
 import Foundation
 import Files
 import SwiftShell
@@ -8,66 +15,6 @@ public struct ScriptToolkit {
         formatter.dateFormat = "YYYY-MM-dd"
         return formatter
     }()
-}
-
-public extension File {
-    @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> File {
-        guard let parent = parent else {
-            throw OperationError.renameFailed(self)
-        }
-
-        var newName = newName
-
-        if keepExtension {
-            if let `extension` = `extension` {
-                let extensionString = ".\(`extension`)"
-
-                if !newName.hasSuffix(extensionString) {
-                    newName += extensionString
-                }
-            }
-        }
-
-        let newPath = parent.path + newName
-
-        do {
-            try FileManager.default.copyItem(atPath: path, toPath: newPath)
-            return try File(path: newPath)
-        } catch {
-            throw OperationError.renameFailed(self)
-        }
-    }
-}
-
-public extension Folder {
-    @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> Folder {
-        guard let parent = parent else {
-            throw OperationError.renameFailed(self)
-        }
-
-        var newName = newName
-
-        if `extension` != nil {
-            if keepExtension {
-                if let `extension` = `extension` {
-                    let extensionString = ".\(`extension`)"
-
-                    if !newName.hasSuffix(extensionString) {
-                        newName += extensionString
-                    }
-                }
-            }
-        }
-
-        let newPath = parent.path + newName
-
-        do {
-            try FileManager.default.copyItem(atPath: path, toPath: newPath)
-            return try Folder(path: newPath)
-        } catch {
-            throw OperationError.renameFailed(self)
-        }
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -316,7 +263,19 @@ public func removeEmptyDirectories(in folder: Folder) throws {
 ////////////////////////////////////////////////////////////////////////////////
 // MARK: - Resize image
 
-
 public func resizeImage(original: String, newName: String, size: CGSize) {
     run("/usr/local/bin/convert", original, "-resize", "\(size.width)x\(size.height)",newName)
+}
+
+public func resizeAt123x(_ file: File, width: Int, height: Int, outputDir: Folder) throws {
+    print(file.name)
+
+    let res1name = outputDir.path.appendingPathComponent(path: file.name)
+    resizeImage(original: file.path, newName: res1name, size: CGSize(width: width, height: height))
+
+    let res2name = outputDir.path.appendingPathComponent(path: file.nameExcludingExtension + "@2x." + (file.extension ?? ""))
+    resizeImage(original: file.path, newName: res2name, size: CGSize(width: 2 * width, height: 2 * height))
+
+    let res3name = outputDir.path.appendingPathComponent(path: file.nameExcludingExtension + "@3x." + (file.extension ?? ""))
+    resizeImage(original: file.path, newName: res3name, size: CGSize(width: 3 * width, height: 3 * height))
 }
