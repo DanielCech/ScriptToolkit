@@ -96,8 +96,8 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Audio Processing
 
-    public func slowDownAudio(newName: String, size: CGSize) throws -> File {
-        run("/usr/local/bin/sox", path, "-resize", "\(size.width)x\(size.height)",newName)
+    public func slowDownAudio(newName: String, percent: Float) throws -> File {
+        run("/usr/local/bin/sox", path, newName, "tempo", "-s", Int(percent))
         return try File(path: newName)
     }
 
