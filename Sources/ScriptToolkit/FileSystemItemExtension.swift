@@ -11,6 +11,10 @@ import SwiftShell
 
 public extension FileSystem.Item {
 
+    public convenience init(path: String, using fileManager: FileManager = .default) throws {
+        try self.init(path: path, kind: FileManager.default.itemKind(atPath: path) ?? .file, using: fileManager)
+    }
+
     public func modificationDate() throws -> Date  {
 
         let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
