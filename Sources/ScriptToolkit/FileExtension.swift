@@ -106,7 +106,7 @@ public extension File {
     // MARK: - Audio Processing
 
     @discardableResult public func slowDownAudio(newName: String, percent: Float) throws -> File {
-        run("/usr/local/bin/sox", path, newName, "tempo", "-s", Int(percent))
+        run("/usr/local/bin/sox", path, newName, "tempo", "-s", String(percent))
         return try File(path: newName)
     }
 
