@@ -111,17 +111,17 @@ public extension File {
     }
 
     @discardableResult public func convertToWav(newName: String) throws -> File {
-        run("ffmpeg", "-i", path, "-sample_rate 44100", newName.deletingPathExtension + ".wav")
+        run("/usr/local/bin/ffmpeg", "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
         return try File(path: newName)
     }
 
     @discardableResult public func convertToM4A(newName: String) throws -> File {
-        run("ffmpeg", "-i", path, "-sample_rate 44100", newName.deletingPathExtension + ".m4a")
+        run("/usr/local/bin/ffmpeg", "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
         return try File(path: newName)
     }
 
     @discardableResult public func addSilence(newName: String) throws -> File {
-        run("sox", "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav", path, newName)
+        run("/usr/local/bin/sox", "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav", path, newName)
         return try File(path: newName)
     }
 }
