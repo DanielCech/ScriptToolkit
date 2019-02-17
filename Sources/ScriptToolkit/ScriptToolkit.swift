@@ -10,6 +10,12 @@ import Files
 import SwiftShell
 
 public struct ScriptToolkit {
+
+    // Setup of absolute paths
+    static let ffmpegPath = "/usr/local/bin/ffmpeg"
+    static let soxPath = "/usr/local/bin/sox"
+    static let silenceFilePath = "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav"
+
     public static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYY-MM-dd"

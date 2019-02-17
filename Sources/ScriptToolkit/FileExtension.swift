@@ -106,22 +106,22 @@ public extension File {
     // MARK: - Audio Processing
 
     @discardableResult public func slowDownAudio(newName: String, percent: Float) throws -> File {
-        run("/usr/local/bin/sox", path, newName, "tempo", "-s", String(percent))
+        run(ScriptToolkit.soxPath, path, newName, "tempo", "-s", String(percent))
         return try File(path: newName)
     }
 
     @discardableResult public func convertToWav(newName: String) throws -> File {
-        run("/usr/local/bin/ffmpeg", "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
+        run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
         return try File(path: newName)
     }
 
     @discardableResult public func convertToM4A(newName: String) throws -> File {
-        run("/usr/local/bin/ffmpeg", "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
+        run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
         return try File(path: newName)
     }
 
     @discardableResult public func addSilence(newName: String) throws -> File {
-        run("/usr/local/bin/sox", "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav", path, newName)
+        run(ScriptToolkit.soxPath, ScriptToolkit.silenceFilePath, path, newName)
         return try File(path: newName)
     }
 }
