@@ -11,6 +11,15 @@ import SwiftShell
 
 public extension File {
 
+    public func nameWithSuffix(_ suffix: String) -> String {
+        if let unwrappedExtension = `extension` {
+            return nameExcludingExtension + suffix + "." + unwrappedExtension
+        }
+        else {
+            return nameExcludingExtension + suffix
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Duplication
 
