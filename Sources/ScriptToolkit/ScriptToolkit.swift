@@ -27,12 +27,12 @@ public struct ScriptToolkit {
 // MARK: - Helpers
 
 @discardableResult public func runAndDebug(_ executable: String, _ args: Any ..., combineOutput: Bool = false) -> RunOutput {
-    let stringargs = args.flatten().map(String.init(describing:))
-    print(executable, String(describing: stringargs))
+    let stringargs = args.map(String.init(describing:))
+    print(executable, String(describing: stringargs.joined(separator: " ")))
     return run(executable, args, combineOutput: combineOutput)
 }
 
-func matches(for regex: String, in text: String) -> [String] {
+public func matches(for regex: String, in text: String) -> [String] {
     do {
         let regex = try NSRegularExpression(pattern: regex)
         let results = regex.matches(in: text,

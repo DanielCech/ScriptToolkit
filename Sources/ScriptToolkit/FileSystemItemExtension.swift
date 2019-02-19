@@ -2,7 +2,7 @@
 //  FileSystemItemExtension.swift
 //  ScriptToolkit
 //
-//  Created by Dan on 15.02.2019.
+//  Created by Dan Cech on 15.02.2019.
 //
 
 import Foundation
