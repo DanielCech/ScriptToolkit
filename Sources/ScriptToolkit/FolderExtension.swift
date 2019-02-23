@@ -43,24 +43,26 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Flatten folder structure
 
-    public func flattenFolderStructure(outputDir: String, move: Bool) throws {
+    public func flattenFolderStructure(outputDir: String, move: Bool, overwrite: Bool = true) throws {
         let outputFolder = try Folder(path: outputDir)
 
         let inputFolderPath = path
         let index = inputFolderPath.index(inputFolderPath.startIndex, offsetBy: inputFolderPath.count)
 
         try makeSubfolderSequence(recursive: true).forEach { folder in
-            print("folder: \(folder), files: \(folder.files)")
             let folderPath = folder.path[index...]
-            let folderPrefix = folderPath.replacingOccurrences(of: "/", with: " ")
+            let folderPrefix = folderPath.replacingOccurrences(of: "/", with: " ").trimmingCharacters(in: .whitespaces)
 
             for file in folder.files {
+                let newName = folderPrefix + " " + file.name
+                if !overwrite && FileManager.default.fileExists(atPath: newName) { continue }
+
                 if move {
-                    try file.rename(to: folderPrefix + " " + file.name, keepExtension: true)
+                    try file.rename(to: newName, keepExtension: true)
                 }
                 else {
                     let newFile = try file.copy(to: outputFolder)
-                    try newFile.rename(to: folderPrefix + " " + file.name, keepExtension: true)
+                    try newFile.rename(to: newName, keepExtension: true)
                 }
             }
         }

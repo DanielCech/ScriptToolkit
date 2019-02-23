@@ -23,7 +23,9 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Duplication
 
-    @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> File {
+    @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true, overwrite: Bool = true) throws -> File? {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+
         guard let parent = parent else {
             throw OperationError.renameFailed(self)
         }
@@ -85,43 +87,58 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Resize image
 
-    public func resizeImage(newName: String, size: CGSize) {
+    @discardableResult public func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File? {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
         run("/usr/local/bin/convert", path, "-resize", "\(size.width)x\(size.height)",newName)
+        return try File(path: newName)
     }
 
-    public func resizeAt123x(width: Int, height: Int, outputDir: Folder) throws {
+    public func resizeAt123x(width: Int, height: Int, outputDir: Folder, overwrite: Bool = true) throws {
         print(name)
 
         let res1name = outputDir.path.appendingPathComponent(path: name)
-        resizeImage(newName: res1name, size: CGSize(width: width, height: height))
+        try resizeImage(newName: res1name, size: CGSize(width: width, height: height), overwrite: overwrite)
 
         let res2name = outputDir.path.appendingPathComponent(path: nameExcludingExtension + "@2x." + (self.extension ?? ""))
-        resizeImage(newName: res2name, size: CGSize(width: 2 * width, height: 2 * height))
+        try resizeImage(newName: res2name, size: CGSize(width: 2 * width, height: 2 * height), overwrite: overwrite)
 
         let res3name = outputDir.path.appendingPathComponent(path: nameExcludingExtension + "@3x." + (self.extension ?? ""))
-        resizeImage(newName: res3name, size: CGSize(width: 3 * width, height: 3 * height))
+        try resizeImage(newName: res3name, size: CGSize(width: 3 * width, height: 3 * height), overwrite: overwrite)
     }
 
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Audio Processing
 
-    @discardableResult public func slowDownAudio(newName: String, percent: Float) throws -> File {
+    @discardableResult public func slowDownAudio(newName: String, percent: Float, overwrite: Bool = true) throws -> File? {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
         run(ScriptToolkit.soxPath, path, newName, "tempo", "-s", String(percent))
         return try File(path: newName)
     }
 
-    @discardableResult public func convertToWav(newName: String) throws -> File {
+    @discardableResult public func convertToWav(newName: String, overwrite: Bool = true) throws -> File? {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
         run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
         return try File(path: newName)
     }
 
-    @discardableResult public func convertToM4A(newName: String) throws -> File {
+    @discardableResult public func convertToM4A(newName: String, overwrite: Bool = true) throws -> File? {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
         run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
         return try File(path: newName)
     }
 
-    @discardableResult public func addSilence(newName: String) throws -> File {
+    @discardableResult public func addSilence(newName: String, overwrite: Bool = true) throws -> File? {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
         run(ScriptToolkit.soxPath, ScriptToolkit.silenceFilePath, path, newName)
+        return try File(path: newName)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - PDF
+
+    @discardableResult public func cropPDF(newName: String, insets: NSEdgeInsets, overwrite: Bool = true) throws -> File? {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+        run(ScriptToolkit.pdfCropPath, "--margins", insets.left, insets.top, insets.right, insets.bottom, path, newName)
         return try File(path: newName)
     }
 }

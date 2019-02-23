@@ -9,9 +9,14 @@ import Foundation
 import Files
 import SwiftShell
 
+enum ScriptError: Error {
+    case fileExists
+}
+
 public struct ScriptToolkit {
 
     // Setup of absolute paths
+    static let pdfCropPath = "/usr/local/bin/pdfcrop"
     static let ffmpegPath = "/usr/local/bin/ffmpeg"
     static let soxPath = "/usr/local/bin/sox"
     static let silenceFilePath = "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav"
