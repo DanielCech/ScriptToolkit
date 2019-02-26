@@ -12,6 +12,7 @@ import SwiftShell
 public enum ScriptError: Error {
     case fileExists
     case fileNotFound
+    case moreInfoNeeded
 }
 
 public struct ScriptToolkit {

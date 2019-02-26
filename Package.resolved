@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "Files",
-        "repositoryURL": "https://github.com/DanielCech/Files.git",
+        "repositoryURL": "https://github.com/JohnSundell/Files.git",
         "state": {
           "branch": null,
-          "revision": "779a60408cd49acb7e2680308b4e6864cc6bc292",
-          "version": "2.2.4"
+          "revision": "06f95bd1bf4f8d5f50bc6bb30b808c253acd4c88",
+          "version": "2.2.1"
         }
       },
       {

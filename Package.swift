@@ -12,7 +12,7 @@ let package = Package(
             targets: ["ScriptToolkit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/DanielCech/Files.git", from: "2.0.0"),
+        .package(url: "https://github.com/JohnSundell/Files.git", from: "2.0.0"),
         .package(url: "https://github.com/kareman/SwiftShell.git", from: "4.0.0"),
         .package(url: "https://github.com/DanielCech/Moderator.git", from: "0.0.0")
     ],

@@ -51,6 +51,42 @@ public extension File {
             throw OperationError.renameFailed(self)
         }
     }
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Modification date
+
+    public func modificationDate() throws -> Date  {
+
+        let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
+        let modificationDate = fileAttributes[.modificationDate] as! Date
+
+        return modificationDate
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Tag file
+
+    public func tag(copy: Bool) throws {
+        let date = try modificationDate()
+        let suffix = ScriptToolkit.dateFormatter.string(from: date)
+        for letter in "abcdefghijklmnopqrstuvwxyz" {
+
+            let file = try File(path: path)
+            let newPath = (file.parent?.path ?? "./")
+            let newName = file.nameExcludingExtension + "(\(suffix + String(letter)))" + "." + (file.extension ?? "")
+
+            if !FileManager.default.fileExists(atPath: newPath + newName) {
+                if copy {
+                    try file.createDuplicate(withName: newName)
+                }
+                else {
+                    try file.rename(to: newName)
+                }
+                return
+            }
+        }
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Photo Processing

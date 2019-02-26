@@ -41,6 +41,45 @@ public extension Folder {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Modification date
+
+    public func modificationDate() throws -> Date  {
+
+        let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
+        let modificationDate = fileAttributes[.modificationDate] as! Date
+
+        return modificationDate
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Tag folder
+
+    public func tag(copy: Bool) throws {
+        let date = try modificationDate()
+        let suffix = ScriptToolkit.dateFormatter.string(from: date)
+        for letter in "abcdefghijklmnopqrstuvwxyz" {
+
+            let folder = try Folder(path: path)
+            let newPath = (folder.parent?.path ?? "./")
+            var newName = folder.nameExcludingExtension + "(\(suffix + String(letter)))"
+
+            if let ext = folder.extension {
+                newName += "." + ext
+            }
+
+            if !FileManager.default.fileExists(atPath: newPath + newName) {
+                if copy {
+                    try folder.createDuplicate(withName: newName)
+                }
+                else {
+                    try folder.rename(to: newName)
+                }
+                return
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Flatten folder structure
 
     public func flattenFolderStructure(outputDir: String, move: Bool, overwrite: Bool = true) throws {
