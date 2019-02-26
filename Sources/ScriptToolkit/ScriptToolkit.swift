@@ -9,18 +9,23 @@ import Foundation
 import Files
 import SwiftShell
 
-enum ScriptError: Error {
+public enum ScriptError: Error {
     case fileExists
+    case fileNotFound
 }
 
 public struct ScriptToolkit {
 
     // Setup of absolute paths
-    static let pdfCropPath = "/usr/local/bin/pdfcrop"
-    static let ffmpegPath = "/usr/local/bin/ffmpeg"
-    static let soxPath = "/usr/local/bin/sox"
-    static let silenceFilePath = "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav"
+    public static let pdfCropPath = "/usr/local/bin/pdfcrop"
+    public static let ffmpegPath = "/usr/local/bin/ffmpeg"
+    public static let soxPath = "/usr/local/bin/sox"
+    public static let convertPath = "/usr/local/bin/convert"
+    public static let compositePath = "/usr/local/bin/composite"
+    public static let silenceFilePath = "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav"
 
+
+    
     public static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYY-MM-dd"

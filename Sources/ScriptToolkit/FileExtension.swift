@@ -89,7 +89,7 @@ public extension File {
 
     @discardableResult public func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File {
         if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
-        run("/usr/local/bin/convert", path, "-resize", "\(size.width)x\(size.height)",newName)
+        run(ScriptToolkit.convertPath, path, "-resize", "\(Int(size.width))x\(Int(size.height))",newName)
         return try File(path: newName)
     }
 
@@ -142,35 +142,4 @@ public extension File {
         return try File(path: newName)
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // MARK: - Find files
-
-    public func findFirstFile(name: String, root: Folder) -> File? {
-        for file in root.makeFileSequence(recursive: true) {
-            if file.name == name {
-                return file
-            }
-        }
-        return nil
-    }
-
-    public func findFiles(name: String, root: Folder) -> [File] {
-        var foundFiles = [File]()
-        for file in root.makeFileSequence(recursive: true) {
-            if file.name == name {
-                foundFiles.append(file)
-            }
-        }
-        return foundFiles
-    }
-
-    public func findFiles(regex: String, root: Folder) -> [File] {
-        var foundFiles = [File]()
-        for file in root.makeFileSequence(recursive: true) {
-            if !matches(for: regex, in: file.name).isEmpty {
-                foundFiles.append(file)
-            }
-        }
-        return foundFiles
-    }
 }

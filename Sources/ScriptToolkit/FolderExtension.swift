@@ -176,10 +176,42 @@ public extension Folder {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Find files
+
+    public func findFirstFile(name: String) -> File? {
+        for file in makeFileSequence(recursive: true) {
+            if file.name == name {
+                return file
+            }
+        }
+        return nil
+    }
+
+    public func findFiles(name: String) -> [File] {
+        var foundFiles = [File]()
+        for file in makeFileSequence(recursive: true) {
+            if file.name == name {
+                foundFiles.append(file)
+            }
+        }
+        return foundFiles
+    }
+
+    public func findFiles(regex: String) -> [File] {
+        var foundFiles = [File]()
+        for file in makeFileSequence(recursive: true) {
+            if !matches(for: regex, in: file.name).isEmpty {
+                foundFiles.append(file)
+            }
+        }
+        return foundFiles
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Find folders
 
-    public func findFirstFolder(name: String, root: Folder) -> Folder? {
-        for folder in root.makeSubfolderSequence(recursive: true) {
+    public func findFirstFolder(name: String) -> Folder? {
+        for folder in makeSubfolderSequence(recursive: true) {
             if folder.name == name {
                 return folder
             }
@@ -187,9 +219,9 @@ public extension Folder {
         return nil
     }
 
-    public func findFolders(name: String, root: Folder) -> [Folder] {
+    public func findFolders(name: String) -> [Folder] {
         var foundFolders = [Folder]()
-        for folder in root.makeSubfolderSequence(recursive: true) {
+        for folder in makeSubfolderSequence(recursive: true) {
             if folder.name == name {
                 foundFolders.append(folder)
             }
@@ -197,9 +229,9 @@ public extension Folder {
         return foundFolders
     }
 
-    public func findFolders(regex: String, root: Folder) -> [Folder] {
+    public func findFolders(regex: String) -> [Folder] {
         var foundFolders = [Folder]()
-        for folder in root.makeSubfolderSequence(recursive: true) {
+        for folder in makeSubfolderSequence(recursive: true) {
             if !matches(for: regex, in: folder.name).isEmpty {
                 foundFolders.append(folder)
             }
