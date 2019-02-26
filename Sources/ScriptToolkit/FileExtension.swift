@@ -87,8 +87,8 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Resize image
 
-    @discardableResult public func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File? {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+    @discardableResult public func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
         run("/usr/local/bin/convert", path, "-resize", "\(size.width)x\(size.height)",newName)
         return try File(path: newName)
     }
@@ -109,26 +109,26 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Audio Processing
 
-    @discardableResult public func slowDownAudio(newName: String, percent: Float, overwrite: Bool = true) throws -> File? {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+    @discardableResult public func slowDownAudio(newName: String, percent: Float, overwrite: Bool = true) throws -> File {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
         run(ScriptToolkit.soxPath, path, newName, "tempo", "-s", String(percent))
         return try File(path: newName)
     }
 
-    @discardableResult public func convertToWav(newName: String, overwrite: Bool = true) throws -> File? {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+    @discardableResult public func convertToWav(newName: String, overwrite: Bool = true) throws -> File {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
         run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
         return try File(path: newName)
     }
 
-    @discardableResult public func convertToM4A(newName: String, overwrite: Bool = true) throws -> File? {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+    @discardableResult public func convertToM4A(newName: String, overwrite: Bool = true) throws -> File {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
         run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
         return try File(path: newName)
     }
 
-    @discardableResult public func addSilence(newName: String, overwrite: Bool = true) throws -> File? {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+    @discardableResult public func addSilence(newName: String, overwrite: Bool = true) throws -> File {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
         run(ScriptToolkit.soxPath, ScriptToolkit.silenceFilePath, path, newName)
         return try File(path: newName)
     }
@@ -136,8 +136,8 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - PDF
 
-    @discardableResult public func cropPDF(newName: String, insets: NSEdgeInsets, overwrite: Bool = true) throws -> File? {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+    @discardableResult public func cropPDF(newName: String, insets: NSEdgeInsets, overwrite: Bool = true) throws -> File {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
         run(ScriptToolkit.pdfCropPath, "--margins", insets.left, insets.top, insets.right, insets.bottom, path, newName)
         return try File(path: newName)
     }
