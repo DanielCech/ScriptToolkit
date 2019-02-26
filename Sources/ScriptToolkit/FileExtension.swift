@@ -141,4 +141,36 @@ public extension File {
         run(ScriptToolkit.pdfCropPath, "--margins", insets.left, insets.top, insets.right, insets.bottom, path, newName)
         return try File(path: newName)
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Find files
+
+    public func findFirstFile(name: String, root: Folder) -> File? {
+        for file in root.makeFileSequence(recursive: true) {
+            if file.name == name {
+                return file
+            }
+        }
+        return nil
+    }
+
+    public func findFiles(name: String, root: Folder) -> [File] {
+        var foundFiles = [File]()
+        for file in root.makeFileSequence(recursive: true) {
+            if file.name == name {
+                foundFiles.append(file)
+            }
+        }
+        return foundFiles
+    }
+
+    public func findFiles(regex: String, root: Folder) -> [File] {
+        var foundFiles = [File]()
+        for file in root.makeFileSequence(recursive: true) {
+            if !matches(for: regex, in: file.name).isEmpty {
+                foundFiles.append(file)
+            }
+        }
+        return foundFiles
+    }
 }

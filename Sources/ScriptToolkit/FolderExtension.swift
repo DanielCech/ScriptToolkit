@@ -174,5 +174,37 @@ public extension Folder {
             try delete()
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Find folders
+
+    public func findFirstFolder(name: String, root: Folder) -> Folder? {
+        for folder in root.makeSubfolderSequence(recursive: true) {
+            if folder.name == name {
+                return folder
+            }
+        }
+        return nil
+    }
+
+    public func findFolders(name: String, root: Folder) -> [Folder] {
+        var foundFolders = [Folder]()
+        for folder in root.makeSubfolderSequence(recursive: true) {
+            if folder.name == name {
+                foundFolders.append(folder)
+            }
+        }
+        return foundFolders
+    }
+
+    public func findFolders(regex: String, root: Folder) -> [Folder] {
+        var foundFolders = [Folder]()
+        for folder in root.makeSubfolderSequence(recursive: true) {
+            if !matches(for: regex, in: folder.name).isEmpty {
+                foundFolders.append(folder)
+            }
+        }
+        return foundFolders
+    }
 }
 
