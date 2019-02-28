@@ -10,6 +10,7 @@ import Files
 import SwiftShell
 
 public enum ScriptError: Error, CustomStringConvertible {
+    case generalError(message: String)
     case fileExists(message: String)
     case fileNotFound(message: String)
     case folderExists(message: String)
@@ -22,6 +23,9 @@ public enum ScriptError: Error, CustomStringConvertible {
         var errorDescription = ""
 
         switch self {
+        case let .generalError(message):
+            errorDescription = message
+
         case let .fileExists(message):
             errorDescription = "file exists: \(message)"
 
@@ -39,10 +43,6 @@ public enum ScriptError: Error, CustomStringConvertible {
 
         case let .moreInfoNeeded(message):
             errorDescription = "more info needed: \(message)"
-
-        default:
-            errorDescription = "general failure"
-
         }
 
         return prefix + errorDescription
