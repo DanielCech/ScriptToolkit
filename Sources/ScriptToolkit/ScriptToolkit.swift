@@ -9,10 +9,44 @@ import Foundation
 import Files
 import SwiftShell
 
-public enum ScriptError: Error {
-    case fileExists
-    case fileNotFound
-    case moreInfoNeeded
+public enum ScriptError: Error, CustomStringConvertible {
+    case fileExists(message: String)
+    case fileNotFound(message: String)
+    case folderExists(message: String)
+    case folderNotFound(message: String)
+    case argumentError(message: String)
+    case moreInfoNeeded(message: String)
+
+    public var description: String {
+        let prefix = "💥 error: "
+        var errorDescription = ""
+
+        switch self {
+        case let .fileExists(message):
+            errorDescription = "file exists: \(message)"
+
+        case let .fileNotFound(message):
+            errorDescription = "file not found: \(message)"
+
+        case let .folderExists(message):
+            errorDescription = "folder exists: \(message)"
+
+        case let .folderNotFound(message):
+            errorDescription = "folder not found: \(message)"
+
+        case let .argumentError(message):
+            errorDescription = "invalid argument: \(message)"
+
+        case let .moreInfoNeeded(message):
+            errorDescription = "more info needed: \(message)"
+
+        default:
+            errorDescription = "general failure"
+
+        }
+
+        return prefix + errorDescription
+    }
 }
 
 public struct ScriptToolkit {
