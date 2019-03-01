@@ -214,11 +214,26 @@ public extension File {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+    // MARK: - Video Processing
+
+    @discardableResult public func reduceVideo(newName: String, overwrite: Bool = true) throws -> File {
+        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
+
+        run(ScriptToolkit.ffmpegPath, "-i", path, "-vf", "scale=iw/2:ih/2", newName)
+        return try File(path: newName)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - PDF
 
     @discardableResult public func cropPDF(newName: String, insets: NSEdgeInsets, overwrite: Bool = true) throws -> File {
         if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
-        run(ScriptToolkit.pdfCropPath, "--margins", insets.left, insets.top, insets.right, insets.bottom, path, newName)
+        let left = Int(insets.left)
+        let top = Int(insets.top)
+        let bottom = Int(insets.bottom)
+        let right = Int(insets.right)
+
+        run(ScriptToolkit.pdfCropPath, "--margins", "\(left) \(top) \(right) \(bottom)", path, newName)
         return try File(path: newName)
     }
 
