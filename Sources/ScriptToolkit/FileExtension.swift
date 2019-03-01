@@ -146,57 +146,86 @@ public extension File {
     // MARK: - Audio Processing
 
     @discardableResult public func slowDownAudio(newName: String, percent: Float, overwrite: Bool = true) throws -> File {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
+        if FileManager.default.fileExists(atPath: newName) {
+            if !overwrite { return try File(path: newName) }
+            try FileManager.default.removeItem(atPath: newName)
+        }
+
         run(ScriptToolkit.soxPath, path, newName, "tempo", "-s", String(percent))
         return try File(path: newName)
     }
 
     @discardableResult public func convertToWav(newName: String, overwrite: Bool = true) throws -> File {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
+        if FileManager.default.fileExists(atPath: newName) {
+            if !overwrite { return try File(path: newName) }
+            try FileManager.default.removeItem(atPath: newName)
+        }
+
         run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
         return try File(path: newName)
     }
 
     @discardableResult public func convertToM4A(newName: String, overwrite: Bool = true) throws -> File {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
+        if FileManager.default.fileExists(atPath: newName) {
+            if !overwrite { return try File(path: newName) }
+            try FileManager.default.removeItem(atPath: newName)
+        }
+
         run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
         return try File(path: newName)
     }
 
     @discardableResult public func addSilence(newName: String, overwrite: Bool = true) throws -> File {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
+        if FileManager.default.fileExists(atPath: newName) {
+            if !overwrite { return try File(path: newName) }
+            try FileManager.default.removeItem(atPath: newName)
+        }
+
         run(ScriptToolkit.soxPath, ScriptToolkit.silenceFilePath, path, newName)
         return try File(path: newName)
     }
 
-    func prepareSongForPractise(outputFolder: Folder) throws {
+    func prepareSongForPractise(outputFolder: Folder, overwrite: Bool = true) throws {
+        let inputFolder = parent!
+
+        let fileName75 = nameExcludingExtension + "@75.m4a"
+        let fileName90 = nameExcludingExtension + "@90.m4a"
+        let fileName100 = nameExcludingExtension + "@100.m4a"
+
+        if !overwrite {
+            let outputPath = outputFolder.path
+            if FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName75))
+                && FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName90))
+                && FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName100)) { return }
+        }
+
         print(name + ":")
 
         let originalWavFile: File
         if let ext = `extension`, ext.lowercased() != "wav" {
             print("  Converting to wav")
-            originalWavFile = try convertToWav(newName: "wav-file.wav")
+            originalWavFile = try convertToWav(newName: inputFolder.path.appendingPathComponent(path: "wav-file.wav"))
         }
         else {
             originalWavFile = self
         }
 
         print("  Converting to 75% speed")
-        let file75 = try originalWavFile.slowDownAudio(newName: "tempo-75.wav", percent: 0.75)
+        let file75 = try originalWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-75.wav"), percent: 0.75)
         print("  Converting to 90% speed")
-        let file90 = try originalWavFile.slowDownAudio(newName: "tempo-90.wav", percent: 0.9)
+        let file90 = try originalWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-90.wav"), percent: 0.9)
 
         print("  Adding initial silence to 75% speed file")
-        let silencedFile75 = try file75.addSilence(newName: "silence-75.wav")
+        let silencedFile75 = try file75.addSilence(newName: inputFolder.path.appendingPathComponent(path: inputFolder.path.appendingPathComponent(path: "silence-75.wav")))
         print("  Adding initial silence to 90% speed file")
-        let silencedFile90 = try file90.addSilence(newName: "silence-90.wav")
+        let silencedFile90 = try file90.addSilence(newName: inputFolder.path.appendingPathComponent(path: inputFolder.path.appendingPathComponent(path: "silence-90.wav")))
         print("  Adding initial silence to 100% speed file")
-        let silencedFile100 = try originalWavFile.addSilence(newName: "silence-100.wav")
+        let silencedFile100 = try originalWavFile.addSilence(newName: inputFolder.path.appendingPathComponent(path: inputFolder.path.appendingPathComponent(path: "silence-100.wav")))
 
         print("  Converting to M4A")
-        let silencedM4AFile75 = try silencedFile75.convertToM4A(newName: nameExcludingExtension + "@75.m4a")
-        let silencedM4AFile90 = try silencedFile90.convertToM4A(newName: nameExcludingExtension + "@90.m4a")
-        let silencedM4AFile100 = try silencedFile100.convertToM4A(newName: nameExcludingExtension + "@100.m4a")
+        let silencedM4AFile75 = try silencedFile75.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName75))
+        let silencedM4AFile90 = try silencedFile90.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName90))
+        let silencedM4AFile100 = try silencedFile100.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName100))
 
         // Move result to output dir
         print("  Moving to destination folder")
@@ -217,7 +246,10 @@ public extension File {
     // MARK: - Video Processing
 
     @discardableResult public func reduceVideo(newName: String, overwrite: Bool = true) throws -> File {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
+        if FileManager.default.fileExists(atPath: newName) {
+            if !overwrite { return try File(path: newName) }
+            try FileManager.default.removeItem(atPath: newName)
+        }
 
         run(ScriptToolkit.ffmpegPath, "-i", path, "-vf", "scale=iw/2:ih/2", newName)
         return try File(path: newName)
@@ -227,13 +259,22 @@ public extension File {
     // MARK: - PDF
 
     @discardableResult public func cropPDF(newName: String, insets: NSEdgeInsets, overwrite: Bool = true) throws -> File {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
+        if FileManager.default.fileExists(atPath: newName) {
+            if !overwrite { return try File(path: newName) }
+            try FileManager.default.removeItem(atPath: newName)
+        }
+        
         let left = Int(insets.left)
         let top = Int(insets.top)
         let bottom = Int(insets.bottom)
         let right = Int(insets.right)
 
-        run(ScriptToolkit.pdfCropPath, "--margins", "\(left) \(top) \(right) \(bottom)", path, newName)
+        main.currentdirectory = parent!.path
+        let result = run(bash: "\(ScriptToolkit.pdfCropPath) --margins '5 5 5 5' \"\(name)\" \"\(newName)\"")
+
+//        let result = run(ScriptToolkit.pdfCropPath, "--margins", "\(left) \(top) \(right) \(bottom)", path, newName)
+        print(result)
+        //runAndDebug(ScriptToolkit.pdfCropPath, "--margins", "\(left) \(top) \(right) \(bottom)", path, newName)
         return try File(path: newName)
     }
 

@@ -73,7 +73,7 @@ public struct ScriptToolkit {
 
 @discardableResult public func runAndDebug(_ executable: String, _ args: Any ..., combineOutput: Bool = false) -> RunOutput {
     let stringargs = args.map(String.init(describing:))
-    print(executable, String(describing: stringargs.joined(separator: " ")))
+    print(executable, String(describing: stringargs.joined(separator: " • ")))
     return run(executable, args, combineOutput: combineOutput)
 }
 
