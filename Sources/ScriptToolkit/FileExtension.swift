@@ -165,6 +165,16 @@ public extension File {
         return try File(path: newName)
     }
 
+    @discardableResult public func normalizeSampleRate(newName: String, overwrite: Bool = true) throws -> File {
+        if FileManager.default.fileExists(atPath: newName) {
+            if !overwrite { return try File(path: newName) }
+            try FileManager.default.removeItem(atPath: newName)
+        }
+
+        run(ScriptToolkit.soxPath, path, "-r", "44100", newName)
+        return try File(path: newName)
+    }
+
     @discardableResult public func convertToM4A(newName: String, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }
@@ -181,7 +191,7 @@ public extension File {
             try FileManager.default.removeItem(atPath: newName)
         }
 
-        run(ScriptToolkit.soxPath, ScriptToolkit.silenceFilePath, path, newName)
+        let result = runAndDebug(ScriptToolkit.soxPath, ScriptToolkit.silenceFilePath, path, newName)
         return try File(path: newName)
     }
 
@@ -210,17 +220,20 @@ public extension File {
             originalWavFile = self
         }
 
+        print("  Normalizing sample rate")
+        let normWavFile = try originalWavFile.normalizeSampleRate(newName: inputFolder.path.appendingPathComponent(path: "wav-file-norm.wav"))
+
         print("  Converting to 75% speed")
-        let file75 = try originalWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-75.wav"), percent: 0.75)
+        let file75 = try normWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-75.wav"), percent: 0.75)
         print("  Converting to 90% speed")
-        let file90 = try originalWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-90.wav"), percent: 0.9)
+        let file90 = try normWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-90.wav"), percent: 0.9)
 
         print("  Adding initial silence to 75% speed file")
-        let silencedFile75 = try file75.addSilence(newName: inputFolder.path.appendingPathComponent(path: inputFolder.path.appendingPathComponent(path: "silence-75.wav")))
+        let silencedFile75 = try file75.addSilence(newName: inputFolder.path.appendingPathComponent(path: "silence-75.wav"))
         print("  Adding initial silence to 90% speed file")
-        let silencedFile90 = try file90.addSilence(newName: inputFolder.path.appendingPathComponent(path: inputFolder.path.appendingPathComponent(path: "silence-90.wav")))
+        let silencedFile90 = try file90.addSilence(newName: inputFolder.path.appendingPathComponent(path: "silence-90.wav"))
         print("  Adding initial silence to 100% speed file")
-        let silencedFile100 = try originalWavFile.addSilence(newName: inputFolder.path.appendingPathComponent(path: inputFolder.path.appendingPathComponent(path: "silence-100.wav")))
+        let silencedFile100 = try normWavFile.addSilence(newName: inputFolder.path.appendingPathComponent(path: "silence-100.wav"))
 
         print("  Converting to M4A")
         let silencedM4AFile75 = try silencedFile75.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName75))
@@ -270,11 +283,8 @@ public extension File {
         let right = Int(insets.right)
 
         main.currentdirectory = parent!.path
-        let result = run(bash: "\(ScriptToolkit.pdfCropPath) --margins '5 5 5 5' \"\(name)\" \"\(newName)\"")
+        run(bash: "\(ScriptToolkit.pdfCropPath) --margins '\(left) \(top) \(right) \(bottom)' \"\(name)\" \"\(newName)\"")
 
-//        let result = run(ScriptToolkit.pdfCropPath, "--margins", "\(left) \(top) \(right) \(bottom)", path, newName)
-        print(result)
-        //runAndDebug(ScriptToolkit.pdfCropPath, "--margins", "\(left) \(top) \(right) \(bottom)", path, newName)
         return try File(path: newName)
     }
 
