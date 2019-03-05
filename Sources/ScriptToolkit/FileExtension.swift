@@ -51,7 +51,7 @@ public extension File {
             throw OperationError.renameFailed(self)
         }
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Modification date
 
@@ -151,7 +151,7 @@ public extension File {
             try FileManager.default.removeItem(atPath: newName)
         }
 
-        run(ScriptToolkit.soxPath, path, newName, "tempo", "-s", String(percent))
+        runAndDebug(ScriptToolkit.soxPath, path, newName, "tempo", "-s", String(percent))
         return try File(path: newName)
     }
 
@@ -161,7 +161,7 @@ public extension File {
             try FileManager.default.removeItem(atPath: newName)
         }
 
-        run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
+        runAndDebug(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".wav")
         return try File(path: newName)
     }
 
@@ -171,7 +171,7 @@ public extension File {
             try FileManager.default.removeItem(atPath: newName)
         }
 
-        run(ScriptToolkit.soxPath, path, "-r", "44100", newName)
+        runAndDebug(ScriptToolkit.soxPath, path, "-r", "44100", "--channels", "2", newName)
         return try File(path: newName)
     }
 
@@ -181,7 +181,7 @@ public extension File {
             try FileManager.default.removeItem(atPath: newName)
         }
 
-        run(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
+        runAndDebug(ScriptToolkit.ffmpegPath, "-i", path, "-sample_rate", "44100", newName.deletingPathExtension + ".m4a")
         return try File(path: newName)
     }
 
@@ -253,6 +253,7 @@ public extension File {
         try silencedFile75.delete()
         try silencedFile90.delete()
         try silencedFile100.delete()
+        try normWavFile.delete()
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +277,7 @@ public extension File {
             if !overwrite { return try File(path: newName) }
             try FileManager.default.removeItem(atPath: newName)
         }
-        
+
         let left = Int(insets.left)
         let top = Int(insets.top)
         let bottom = Int(insets.bottom)
