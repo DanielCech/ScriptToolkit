@@ -93,7 +93,7 @@ public extension NSImage {
         return finalResult
     }
 
-    func image(withText text: String, attributes: [NSAttributedString.Key: Any]) -> NSImage {
+    func image(withText text: String, attributes: [NSAttributedString.Key: Any], position: CGFloat) -> NSImage {
         let image = self
         let text = text as NSString
         let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
@@ -102,7 +102,7 @@ public extension NSImage {
 
         let x = (image.size.width - textSize.width) / 2
         let y = (image.size.height - textSize.height) / 2
-        let point = NSMakePoint(x, y * 0.2)
+        let point = NSMakePoint(x, y * position)
 
         image.lockFocus()
         text.draw(at: point, withAttributes: attributes)
@@ -111,25 +111,29 @@ public extension NSImage {
         return image
     }
 
-    func annotate(text: String, size: CGFloat, fill: NSColor, stroke: NSColor) -> NSImage {
+    func annotate(text: String, font: String, size: CGFloat, position: CGFloat, fill: NSColor, stroke: NSColor, strokeWidth: CGFloat) throws -> NSImage {
+
+        guard let titleFont = NSFont(name: font, size: size) else { throw ScriptError.argumentError(message: "Unable to find font \(font)") }
 
         // Solid color text
         let fillText = image(
             withText: text,
             attributes: [
                 .foregroundColor: fill,
-                .font: NSFont(name: "Impact", size: size)!
-            ])
+                .font: titleFont
+            ],
+            position: position)
 
         // Add strokes
         return fillText.image(
             withText: text,
             attributes: [
-                .foregroundColor: fill,
+                .foregroundColor: NSColor.clear,
                 .strokeColor: stroke,
-                .strokeWidth: 1,
-                .font: NSFont(name: "Impact", size: size)!
-            ])
+                .strokeWidth: strokeWidth * size,
+                .font: titleFont
+            ],
+            position: position)
     }
 }
 

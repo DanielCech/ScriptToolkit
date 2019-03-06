@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 
 public extension NSColor {
-    convenience init(hexString: String) {
+    convenience init?(hexString: String) {
         let hexString = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
         let scanner = Scanner(string: hexString)
 
@@ -18,7 +18,7 @@ public extension NSColor {
         }
 
         var color: UInt32 = 0
-        scanner.scanHexInt32(&color)
+        guard scanner.scanHexInt32(&color) else { return nil }
 
         let mask = 0x000000FF
         let r = Int(color >> 16) & mask
