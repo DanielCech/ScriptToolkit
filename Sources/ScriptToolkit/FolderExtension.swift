@@ -11,7 +11,7 @@ import SwiftShell
 
 public extension Folder {
     
-    @discardableResult public func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> Folder {
+    @discardableResult func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> Folder {
         guard let parent = parent else {
             throw OperationError.renameFailed(self)
         }
@@ -43,7 +43,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Modification date
 
-    public func modificationDate() throws -> Date  {
+    func modificationDate() throws -> Date  {
 
         let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
         let modificationDate = fileAttributes[.modificationDate] as! Date
@@ -54,7 +54,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Tag folder
 
-    public func tag(copy: Bool) throws {
+    func tag(copy: Bool) throws {
         let date = try modificationDate()
         let suffix = ScriptToolkit.dateFormatter.string(from: date)
         for letter in "abcdefghijklmnopqrstuvwxyz" {
@@ -82,7 +82,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Flatten folder structure
 
-    public func flattenFolderStructure(outputDir: String, move: Bool, overwrite: Bool = true) throws {
+    func flattenFolderStructure(outputDir: String, move: Bool, overwrite: Bool = true) throws {
         let outputFolder = try Folder(path: outputDir)
 
         let inputFolderPath = path
@@ -110,7 +110,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Sort Photos
 
-    public func exifTool(byCameraModel: Bool, processM4V: Bool) throws {
+    func exifTool(byCameraModel: Bool, processM4V: Bool) throws {
         let inputFolder = try Folder(path: path)
 
         print("📷 Processing EXIFtool...")
@@ -169,7 +169,7 @@ public extension Folder {
         }
     }
     
-    public func organizePhotos() throws {
+    func organizePhotos() throws {
         print("📂 Organizing...")
 
         var folderRecords = [(Folder, [Int])]()
@@ -203,7 +203,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Remove Empty Directories
 
-    public func removeEmptyDirectories() throws {
+    func removeEmptyDirectories() throws {
         for subfolder in subfolders {
             try subfolder.removeEmptyDirectories()
         }
@@ -217,7 +217,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Find files
 
-    public func findFirstFile(name: String) -> File? {
+    func findFirstFile(name: String) -> File? {
         for file in makeFileSequence(recursive: true) {
             if file.name == name {
                 return file
@@ -226,7 +226,7 @@ public extension Folder {
         return nil
     }
 
-    public func findFiles(name: String) -> [File] {
+    func findFiles(name: String) -> [File] {
         var foundFiles = [File]()
         for file in makeFileSequence(recursive: true) {
             if file.name == name {
@@ -236,7 +236,7 @@ public extension Folder {
         return foundFiles
     }
 
-    public func findFiles(regex: String) -> [File] {
+    func findFiles(regex: String) -> [File] {
         var foundFiles = [File]()
         for file in makeFileSequence(recursive: true) {
             if !matches(for: regex, in: file.name).isEmpty {
@@ -249,7 +249,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Find folders
 
-    public func findFirstFolder(name: String) -> Folder? {
+    func findFirstFolder(name: String) -> Folder? {
         for folder in makeSubfolderSequence(recursive: true) {
             if folder.name == name {
                 return folder
@@ -258,7 +258,7 @@ public extension Folder {
         return nil
     }
 
-    public func findFolders(name: String) -> [Folder] {
+    func findFolders(name: String) -> [Folder] {
         var foundFolders = [Folder]()
         for folder in makeSubfolderSequence(recursive: true) {
             if folder.name == name {
@@ -268,7 +268,7 @@ public extension Folder {
         return foundFolders
     }
 
-    public func findFolders(regex: String) -> [Folder] {
+    func findFolders(regex: String) -> [Folder] {
         var foundFolders = [Folder]()
         for folder in makeSubfolderSequence(recursive: true) {
             if !matches(for: regex, in: folder.name).isEmpty {

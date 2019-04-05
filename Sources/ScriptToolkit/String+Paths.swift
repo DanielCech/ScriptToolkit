@@ -9,32 +9,32 @@ import Foundation
 
 public extension String {
 
-    public var lastPathComponent: String {
+    var lastPathComponent: String {
         return (self as NSString).lastPathComponent
     }
 
-    public var pathExtension: String {
+    var pathExtension: String {
         return (self as NSString).pathExtension
     }
 
-    public var deletingLastPathComponent: String {
+    var deletingLastPathComponent: String {
         return (self as NSString).deletingLastPathComponent
     }
 
-    public var deletingPathExtension: String {
+    var deletingPathExtension: String {
         return (self as NSString).deletingPathExtension
     }
 
-    public var pathComponents: [String] {
+    var pathComponents: [String] {
         return (self as NSString).pathComponents
     }
 
-    public func appendingPathComponent(path: String) -> String {
+    func appendingPathComponent(path: String) -> String {
         let nsString = self as NSString
         return nsString.appendingPathComponent(path)
     }
 
-    public func appendingPathExtension(ext: String) -> String? {
+    func appendingPathExtension(ext: String) -> String? {
         let nsString = self as NSString
         return nsString.appendingPathExtension(ext)
     }

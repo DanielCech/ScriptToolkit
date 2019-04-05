@@ -9,7 +9,7 @@
 import Foundation
 
 public extension String {
-    public subscript(value: NSRange) -> Substring {
+    subscript(value: NSRange) -> Substring {
         return self[value.lowerBound ..< value.upperBound]
     }
 }
@@ -17,27 +17,27 @@ public extension String {
 // MARK: - Subscripts
 
 public extension String {
-    public subscript(value: CountableClosedRange<Int>) -> Substring {
+    subscript(value: CountableClosedRange<Int>) -> Substring {
         return self[index(at: value.lowerBound) ... index(at: value.upperBound)]
     }
 
-    public subscript(value: CountableRange<Int>) -> Substring {
+    subscript(value: CountableRange<Int>) -> Substring {
         return self[index(at: value.lowerBound) ..< index(at: value.upperBound)]
     }
 
-    public subscript(value: PartialRangeUpTo<Int>) -> Substring {
+    subscript(value: PartialRangeUpTo<Int>) -> Substring {
         return self[..<index(at: value.upperBound)]
     }
 
-    public subscript(value: PartialRangeThrough<Int>) -> Substring {
+    subscript(value: PartialRangeThrough<Int>) -> Substring {
         return self[...index(at: value.upperBound)]
     }
 
-    public subscript(value: PartialRangeFrom<Int>) -> Substring {
+    subscript(value: PartialRangeFrom<Int>) -> Substring {
         return self[index(at: value.lowerBound)...]
     }
 
-    public func index(at offset: Int) -> String.Index {
+    func index(at offset: Int) -> String.Index {
         return index(startIndex, offsetBy: offset)
     }
 }
@@ -45,24 +45,24 @@ public extension String {
 // MARK: - Safe subscripts
 
 public extension String {
-    public subscript(safe value: CountableClosedRange<Int>) -> Substring {
+    subscript(safe value: CountableClosedRange<Int>) -> Substring {
         let lowerBound = max(value.lowerBound, 0)
         let upperBound = min(value.upperBound, max(count - 1, 0))
         return self[index(at: lowerBound) ... index(at: upperBound)]
     }
 
-    public subscript(safe value: CountableRange<Int>) -> Substring {
+    subscript(safe value: CountableRange<Int>) -> Substring {
         let lowerBound = max(value.lowerBound, 0)
         let upperBound = min(value.upperBound, max(count, 0))
         return self[index(at: lowerBound) ..< index(at: upperBound)]
     }
 
-    public subscript(safe value: PartialRangeUpTo<Int>) -> Substring {
+    subscript(safe value: PartialRangeUpTo<Int>) -> Substring {
         let upperBound = min(value.upperBound, max(count, 0))
         return self[..<index(at: upperBound)]
     }
 
-    public subscript(safe value: PartialRangeThrough<Int>) -> Substring {
+    subscript(safe value: PartialRangeThrough<Int>) -> Substring {
         let upperBound: Int
         if value.upperBound >= 0 {
             upperBound = min(value.upperBound, max(count - 1, 0))
@@ -74,7 +74,7 @@ public extension String {
         return self[...index(at: upperBound)]
     }
 
-    public subscript(safe value: PartialRangeFrom<Int>) -> Substring {
+    subscript(safe value: PartialRangeFrom<Int>) -> Substring {
         let lowerBound = max(value.lowerBound, 0)
         return self[index(at: lowerBound)...]
     }
