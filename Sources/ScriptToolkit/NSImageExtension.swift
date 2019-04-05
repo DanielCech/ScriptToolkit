@@ -93,7 +93,7 @@ public extension NSImage {
         return finalResult
     }
 
-    func image(withText text: String, attributes: [NSAttributedString.Key: Any], horizontalPosition: CGFloat, verticalPosition: CGFloat) -> NSImage {
+    func image(withText text: String, attributes: [NSAttributedString.Key: Any], horizontalTitlePosition: CGFloat, verticalTitlePosition: CGFloat) -> NSImage {
         let image = self
         let text = text as NSString
         let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
@@ -102,7 +102,7 @@ public extension NSImage {
 
         let x = (image.size.width - textSize.width) / 2
         let y = (image.size.height - textSize.height) / 2
-        let point = NSMakePoint(x * horizontalPosition, y * verticalPosition)
+        let point = NSMakePoint(x * horizontalTitlePosition, y * verticalTitlePosition)
 
         image.lockFocus()
         text.draw(at: point, withAttributes: attributes)
@@ -125,18 +125,21 @@ public extension NSImage {
 
         guard let titleFont = NSFont(name: font, size: size) else { throw ScriptError.argumentError(message: "Unable to find font \(font)") }
 
-        var alignmentMode: CATextLayerAlignmentMode
+        var alignmentMode: NSTextAlignment
         
         switch titleAlignment {
         case "left":
             alignmentMode = .left
             
-        case "center":
-            alignmentMode = .center
-            
         case "right":
             alignmentMode = .right
+            
+        default:
+            alignmentMode = .center
         }
+        
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = alignmentMode
         
         // Solid color text
         let fillText = image(
@@ -144,7 +147,7 @@ public extension NSImage {
             attributes: [
                 .foregroundColor: fill,
                 .font: titleFont,
-                .alignmentMode: alignmentMode
+                .paragraphStyle: paragraph
             ],
             horizontalTitlePosition: horizontalTitlePosition,
             verticalTitlePosition: verticalTitlePosition
@@ -158,7 +161,7 @@ public extension NSImage {
                 .strokeColor: stroke,
                 .strokeWidth: strokeWidth * size,
                 .font: titleFont,
-                .alignmentMode: alignmentMode
+                .paragraphStyle: paragraph
             ],
             horizontalTitlePosition: horizontalTitlePosition,
             verticalTitlePosition: verticalTitlePosition)
