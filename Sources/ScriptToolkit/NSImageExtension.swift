@@ -93,7 +93,7 @@ public extension NSImage {
         return finalResult
     }
 
-    func image(withText text: String, attributes: [NSAttributedString.Key: Any], position: CGFloat) -> NSImage {
+    func image(withText text: String, attributes: [NSAttributedString.Key: Any], horizontalPosition: CGFloat, verticalPosition: CGFloat) -> NSImage {
         let image = self
         let text = text as NSString
         let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
@@ -102,7 +102,7 @@ public extension NSImage {
 
         let x = (image.size.width - textSize.width) / 2
         let y = (image.size.height - textSize.height) / 2
-        let point = NSMakePoint(x, y * position)
+        let point = NSMakePoint(x * horizontalPosition, y * verticalPosition)
 
         image.lockFocus()
         text.draw(at: point, withAttributes: attributes)
@@ -111,18 +111,44 @@ public extension NSImage {
         return image
     }
 
-    func annotate(text: String, font: String, size: CGFloat, position: CGFloat, fill: NSColor, stroke: NSColor, strokeWidth: CGFloat) throws -> NSImage {
+    func annotate(
+        text: String,
+        font: String,
+        size: CGFloat,
+        horizontalTitlePosition: CGFloat,
+        verticalTitlePosition: CGFloat,
+        titleAlignment: String,
+        fill: NSColor,
+        stroke: NSColor,
+        strokeWidth: CGFloat
+    ) throws -> NSImage {
 
         guard let titleFont = NSFont(name: font, size: size) else { throw ScriptError.argumentError(message: "Unable to find font \(font)") }
 
+        var alignmentMode: CATextLayerAlignmentMode
+        
+        switch titleAlignment {
+        case "left":
+            alignmentMode = .left
+            
+        case "center":
+            alignmentMode = .center
+            
+        case "right":
+            alignmentMode = .right
+        }
+        
         // Solid color text
         let fillText = image(
             withText: text,
             attributes: [
                 .foregroundColor: fill,
-                .font: titleFont
+                .font: titleFont,
+                .alignmentMode: alignmentMode
             ],
-            position: position)
+            horizontalTitlePosition: horizontalTitlePosition,
+            verticalTitlePosition: verticalTitlePosition
+            )
 
         // Add strokes
         return fillText.image(
@@ -131,9 +157,11 @@ public extension NSImage {
                 .foregroundColor: NSColor.clear,
                 .strokeColor: stroke,
                 .strokeWidth: strokeWidth * size,
-                .font: titleFont
+                .font: titleFont,
+                .alignmentMode: alignmentMode
             ],
-            position: position)
+            horizontalTitlePosition: horizontalTitlePosition,
+            verticalTitlePosition: verticalTitlePosition)
     }
 }
 
