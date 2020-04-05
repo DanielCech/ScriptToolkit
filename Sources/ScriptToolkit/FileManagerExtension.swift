@@ -8,8 +8,8 @@
 import Foundation
 import Files
 
-extension FileManager {
-    func locationExists(at path: String, kind: LocationKind) -> Bool {
+public extension FileManager {
+    func locationExists(path: String, kind: LocationKind) -> Bool {
         var isFolder: ObjCBool = false
 
         guard fileExists(atPath: path, isDirectory: &isFolder) else {
@@ -22,7 +22,7 @@ extension FileManager {
         }
     }
     
-    func locationKind(at path: String) -> LocationKind {
+    func locationKind(for path: String) -> LocationKind {
         var isFolder: ObjCBool = false
 
         guard fileExists(atPath: path, isDirectory: &isFolder) else {
