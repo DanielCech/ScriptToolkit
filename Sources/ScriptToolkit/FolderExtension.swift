@@ -13,7 +13,7 @@ public extension Folder {
     
     @discardableResult func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> Folder {
         guard let parent = parent else {
-            throw OperationError.renameFailed(self)
+            throw ScriptError.renameFailed(message: newName)
         }
 
         var newName = newName
@@ -36,7 +36,7 @@ public extension Folder {
             try FileManager.default.copyItem(atPath: path, toPath: newPath)
             return try Folder(path: newPath)
         } catch {
-            throw OperationError.renameFailed(self)
+            throw ScriptError.renameFailed(message: newPath)
         }
     }
 
@@ -88,7 +88,8 @@ public extension Folder {
         let inputFolderPath = path
         let index = inputFolderPath.index(inputFolderPath.startIndex, offsetBy: inputFolderPath.count)
 
-        try makeSubfolderSequence(recursive: true).forEach { folder in
+        
+        try subfolders.recursive.forEach({ folder in
             let folderPath = folder.path[index...]
             let folderPrefix = folderPath.replacingOccurrences(of: "/", with: " ").trimmingCharacters(in: .whitespaces)
 
@@ -104,7 +105,7 @@ public extension Folder {
                     try newFile.rename(to: newName, keepExtension: true)
                 }
             }
-        }
+        })
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -141,8 +142,8 @@ public extension Folder {
         originalFolders.append(inputFolder)
 
         // Support of M4V
-        for dir in originalFolders {
-            for file in dir.makeFileSequence(recursive: true, includeHidden: true) {
+        for folder in originalFolders {
+            for file in folder.files.includingHidden {
 
                 switch file.extension?.lowercased() ?? "" {
                 case "jpg", "jpeg":
@@ -194,7 +195,7 @@ public extension Folder {
         originalFolders.append(self)
 
         for folder in originalFolders {
-            for file in folder.makeFileSequence(recursive: true, includeHidden: true) {
+            for file in folder.files.includingHidden {
                 try file.incorporateFile(using: folderRecords)
             }
         }
@@ -208,7 +209,7 @@ public extension Folder {
             try subfolder.removeEmptyDirectories()
         }
 
-        if subfolders.count == 0 && files.count == 0 {
+        if subfolders.count() == 0 && files.count() == 0 {
             print("removed: \(path)")
             try delete()
         }
@@ -218,7 +219,7 @@ public extension Folder {
     // MARK: - Find files
 
     func findFirstFile(name: String) -> File? {
-        for file in makeFileSequence(recursive: true) {
+        for file in files.recursive {
             if file.name == name {
                 return file
             }
@@ -228,7 +229,7 @@ public extension Folder {
 
     func findFiles(name: String) -> [File] {
         var foundFiles = [File]()
-        for file in makeFileSequence(recursive: true) {
+        for file in files.recursive {
             if file.name == name {
                 foundFiles.append(file)
             }
@@ -238,7 +239,7 @@ public extension Folder {
 
     func findFiles(regex: String) -> [File] {
         var foundFiles = [File]()
-        for file in makeFileSequence(recursive: true) {
+        for file in files.recursive {
             if !matches(for: regex, in: file.name).isEmpty {
                 foundFiles.append(file)
             }
@@ -250,17 +251,18 @@ public extension Folder {
     // MARK: - Find folders
 
     func findFirstFolder(name: String) -> Folder? {
-        for folder in makeSubfolderSequence(recursive: true) {
+        for folder in subfolders.recursive {
             if folder.name == name {
                 return folder
             }
         }
+
         return nil
     }
 
     func findFolders(name: String) -> [Folder] {
         var foundFolders = [Folder]()
-        for folder in makeSubfolderSequence(recursive: true) {
+        for folder in subfolders.recursive {
             if folder.name == name {
                 foundFolders.append(folder)
             }
@@ -270,7 +272,7 @@ public extension Folder {
 
     func findFolders(regex: String) -> [Folder] {
         var foundFolders = [Folder]()
-        for folder in makeSubfolderSequence(recursive: true) {
+        for folder in subfolders.recursive {
             if !matches(for: regex, in: folder.name).isEmpty {
                 foundFolders.append(folder)
             }

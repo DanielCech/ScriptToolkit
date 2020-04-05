@@ -20,6 +20,7 @@ public enum ScriptError: Error {
     case folderNotFound(message: String)
     case argumentError(message: String)
     case moreInfoNeeded(message: String)
+    case renameFailed(message: String)
 }
 
 extension ScriptError: PrintableError {
@@ -48,6 +49,9 @@ extension ScriptError: PrintableError {
 
         case let .moreInfoNeeded(message):
             errorDescription = "more info needed: \(message)"
+            
+        case .renameFailed(let message):
+            errorDescription = "rename failed: \(message)"
         }
 
         return prefix + errorDescription

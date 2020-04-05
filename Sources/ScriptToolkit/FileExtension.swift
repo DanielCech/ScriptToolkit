@@ -27,7 +27,7 @@ public extension File {
         if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
 
         guard let parent = parent else {
-            throw OperationError.renameFailed(self)
+            throw ScriptError.renameFailed(message: newName)
         }
 
         var newName = newName
@@ -48,7 +48,7 @@ public extension File {
             try FileManager.default.copyItem(atPath: path, toPath: newPath)
             return try File(path: newPath)
         } catch {
-            throw OperationError.renameFailed(self)
+            throw ScriptError.renameFailed(message: newPath)
         }
     }
 
