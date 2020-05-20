@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AppKit
 import Files
 import SwiftShell
 
@@ -123,9 +124,14 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Resize image
 
-    @discardableResult func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return try File(path: newName) }
-        run(ScriptToolkit.convertPath, path, "-resize", "\(Int(size.width))x\(Int(size.height))",newName)
+    @discardableResult func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File  {
+        let image: NSImage? = NSImage(contentsOfFile: self.path)
+        let newImage = image.map { try? $0.copy(size: size) } ?? nil
+        if let unwrappedNewImage = newImage {
+            
+            try unwrappedNewImage.savePNGRepresentationToURL(url: URL(fileURLWithPath: newName))
+        }
+        
         return try File(path: newName)
     }
 

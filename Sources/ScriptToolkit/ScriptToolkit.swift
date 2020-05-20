@@ -16,7 +16,7 @@ public struct ScriptToolkit {
     public static let pdfCropPath = "/usr/local/bin/pdfcrop"
     public static let ffmpegPath = "/usr/local/bin/ffmpeg"
     public static let soxPath = "/usr/local/bin/sox"
-    public static let convertPath = "/usr/local/bin/convert"
+    // public static let convertPath = "/usr/local/bin/convert"   // Trying to get rid of ImageMagick dependency
     public static let compositePath = "/usr/local/bin/composite"
     public static let silenceFilePath = "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav"
 
