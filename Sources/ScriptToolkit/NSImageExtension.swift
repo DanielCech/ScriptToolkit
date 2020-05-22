@@ -93,16 +93,32 @@ public extension NSImage {
         return finalResult
     }
 
-    func image(withText text: String, attributes: [NSAttributedString.Key: Any], horizontalTitlePosition: CGFloat, verticalTitlePosition: CGFloat) -> NSImage {
+    func image(
+        withText text: String,
+        alignmentMode: NSTextAlignment,
+        attributes: [NSAttributedString.Key: Any],
+        horizontalTitlePosition: CGFloat,
+        verticalTitlePosition: CGFloat) -> NSImage {
+        
         let image = self
         let text = text as NSString
-//        let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
+        let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
 
-//        let textSize = text.boundingRect(with: image.size, options: options, attributes: attributes).size
+        let textSize = text.boundingRect(with: image.size, options: options, attributes: attributes).size
+        var offsetX: CGFloat
+        
+        switch alignmentMode {
+        case .left:
+            offsetX = 0
+        case .center:
+            offsetX = -textSize.width/2
+        case .right:
+            offsetX = -textSize.width
+        default:
+            offsetX = 0
+        }
 
-//        let x = (image.size.width - textSize.width) / 2
-//        let y = (image.size.height - textSize.height) / 2
-        let point = NSMakePoint(image.size.width * horizontalTitlePosition, image.size.height * verticalTitlePosition)
+        let point = NSMakePoint(image.size.width * horizontalTitlePosition + offsetX, image.size.height * verticalTitlePosition - textSize.height/2)
 
         image.lockFocus()
         text.draw(at: point, withAttributes: attributes)
@@ -144,6 +160,7 @@ public extension NSImage {
         // Solid color text
         let fillText = image(
             withText: text,
+            alignmentMode: alignmentMode,
             attributes: [
                 .foregroundColor: fill,
                 .font: titleFont,
@@ -156,6 +173,7 @@ public extension NSImage {
         // Add strokes
         return fillText.image(
             withText: text,
+            alignmentMode: alignmentMode,
             attributes: [
                 .foregroundColor: NSColor.clear,
                 .strokeColor: stroke,
