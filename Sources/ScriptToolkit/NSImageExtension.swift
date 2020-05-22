@@ -96,13 +96,13 @@ public extension NSImage {
     func image(withText text: String, attributes: [NSAttributedString.Key: Any], horizontalTitlePosition: CGFloat, verticalTitlePosition: CGFloat) -> NSImage {
         let image = self
         let text = text as NSString
-        let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
+//        let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
 
-        let textSize = text.boundingRect(with: image.size, options: options, attributes: attributes).size
+//        let textSize = text.boundingRect(with: image.size, options: options, attributes: attributes).size
 
-        let x = (image.size.width - textSize.width) / 2
-        let y = (image.size.height - textSize.height) / 2
-        let point = NSMakePoint(x * horizontalTitlePosition, y * verticalTitlePosition)
+//        let x = (image.size.width - textSize.width) / 2
+//        let y = (image.size.height - textSize.height) / 2
+        let point = NSMakePoint(image.size.width * horizontalTitlePosition, image.size.height * verticalTitlePosition)
 
         image.lockFocus()
         text.draw(at: point, withAttributes: attributes)
