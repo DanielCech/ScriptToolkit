@@ -67,7 +67,9 @@ public extension NSImage {
             try png.write(to: url, options: .atomicWrite)
         }
     }
-
+    
+    
+    /// Combine two images together
     func combine(withImage image: NSImage) throws -> NSImage {
         guard
             let firstImageData = image.tiffRepresentation,
@@ -93,6 +95,7 @@ public extension NSImage {
         return finalResult
     }
 
+    /// Image annotation
     func image(
         withText text: String,
         alignmentMode: NSTextAlignment,
@@ -127,6 +130,7 @@ public extension NSImage {
         return image
     }
 
+    /// Image annotation
     func annotate(
         text: String,
         font: String,

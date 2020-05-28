@@ -9,6 +9,8 @@ import Foundation
 import AppKit
 
 public extension NSColor {
+    
+    /// Create color from hex string
     convenience init?(hexString: String) {
         let hexString = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
         let scanner = Scanner(string: hexString)

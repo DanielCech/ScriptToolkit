@@ -9,6 +9,7 @@ import Foundation
 import Files
 
 public extension FileManager {
+    /// Does the location exist?
     func locationExists(path: String, kind: LocationKind) -> Bool {
         var isFolder: ObjCBool = false
 
@@ -22,6 +23,7 @@ public extension FileManager {
         }
     }
     
+    /// Type of location in path
     func locationKind(for path: String) -> LocationKind {
         var isFolder: ObjCBool = false
 

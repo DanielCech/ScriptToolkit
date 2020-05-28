@@ -12,6 +12,7 @@ import SwiftShell
 
 public extension File {
 
+    /// Appending suffix to file name
     func nameWithSuffix(_ suffix: String) -> String {
         if let unwrappedExtension = `extension` {
             return nameExcludingExtension + suffix + "." + unwrappedExtension
@@ -21,9 +22,8 @@ public extension File {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // MARK: - Duplication
-
+    
+    /// Create file duplicate
     @discardableResult func createDuplicate(withName newName: String, keepExtension: Bool = true, overwrite: Bool = true) throws -> File? {
         if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
 
@@ -53,9 +53,8 @@ public extension File {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // MARK: - Modification date
-
+    
+    /// File modification date
     func modificationDate() throws -> Date  {
 
         let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
@@ -64,9 +63,8 @@ public extension File {
         return modificationDate
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // MARK: - Tag file
 
+    /// Tag file with date/time/version signature
     func tag(copy: Bool) throws {
         let date = try modificationDate()
         let suffix = ScriptToolkit.dateFormatter.string(from: date)
@@ -92,6 +90,7 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Photo Processing
 
+    /// Moving file to appropriate folder during photo processing
     func incorporateFile(using folderRecords: [(Folder, [Int])]) throws {
         print("\(path)")
         let numberString = nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
@@ -124,6 +123,7 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Resize image
 
+    /// Image resizing
     @discardableResult func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File  {
         let image: NSImage? = NSImage(contentsOfFile: self.path)
         let newImage = image.map { try? $0.copy(size: size) } ?? nil
@@ -135,6 +135,7 @@ public extension File {
         return try File(path: newName)
     }
 
+    /// Create three sizes of image for iOS asset
     func resizeAt123x(width: Int, height: Int, outputDir: Folder, overwrite: Bool = true) throws {
         print(name)
 
@@ -151,6 +152,7 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Audio Processing
 
+    /// Slow down audio
     @discardableResult func slowDownAudio(newName: String, percent: Float, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }
@@ -161,6 +163,7 @@ public extension File {
         return try File(path: newName)
     }
 
+    /// Conversion to .wav
     @discardableResult func convertToWav(newName: String, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }
@@ -171,6 +174,7 @@ public extension File {
         return try File(path: newName)
     }
 
+    /// Sample rate normalization
     @discardableResult func normalizeSampleRate(newName: String, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }
@@ -180,7 +184,8 @@ public extension File {
         runAndDebug(ScriptToolkit.soxPath, path, "-r", "44100", "--channels", "2", newName)
         return try File(path: newName)
     }
-
+    
+    /// Conversion to .m4a
     @discardableResult func convertToM4A(newName: String, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }
@@ -191,6 +196,7 @@ public extension File {
         return try File(path: newName)
     }
 
+    /// Add a 5s silence and the begining of audio file
     @discardableResult func addSilence(newName: String, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }
@@ -201,6 +207,7 @@ public extension File {
         return try File(path: newName)
     }
 
+    /// Prepare song for practise - generate audio in 50%, 75%, 90% and 100% speed
     func prepareSongForPractise(outputFolder: Folder, overwrite: Bool = true) throws {
         let inputFolder = parent!
 
@@ -275,6 +282,7 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Video Processing
 
+    /// Video reduction to smaller size and quality
     @discardableResult func reduceVideo(newName: String, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }
@@ -288,6 +296,7 @@ public extension File {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - PDF
 
+    /// Crop margins from PDF
     @discardableResult func cropPDF(newName: String, insets: NSEdgeInsets, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
             if !overwrite { return try File(path: newName) }

@@ -7,6 +7,8 @@
 
 import Foundation
 
+
+/// Path manipulation methods that are available for NSString
 public extension String {
 
     var lastPathComponent: String {

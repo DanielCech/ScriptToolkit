@@ -11,6 +11,7 @@ import SwiftShell
 
 public extension Folder {
     
+    /// Create folder duplicate
     @discardableResult func createDuplicate(withName newName: String, keepExtension: Bool = true) throws -> Folder {
         guard let parent = parent else {
             throw ScriptError.renameFailed(message: newName)
@@ -43,6 +44,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Modification date
 
+    /// Get folder modification date
     func modificationDate() throws -> Date  {
 
         let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
@@ -54,6 +56,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Tag folder
 
+    /// Tag folder with date/time/version signature
     func tag(copy: Bool) throws {
         let date = try modificationDate()
         let suffix = ScriptToolkit.dateFormatter.string(from: date)
@@ -82,6 +85,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Flatten folder structure
 
+    /// Make directory structure flat - use longer file names
     func flattenFolderStructure(outputDir: String, move: Bool, overwrite: Bool = true) throws {
         let outputFolder = try Folder(path: outputDir)
 
@@ -111,6 +115,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Sort Photos
 
+    /// Get photo metadata
     func exifTool(byCameraModel: Bool, processM4V: Bool) throws {
         let inputFolder = try Folder(path: path)
 
@@ -170,6 +175,7 @@ public extension Folder {
         }
     }
     
+    /// Organize photos by metadata
     func organizePhotos() throws {
         print("📂 Organizing...")
 
@@ -204,6 +210,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Remove Empty Directories
 
+    /// Remove empty subdirectories
     func removeEmptyDirectories() throws {
         for subfolder in subfolders {
             try subfolder.removeEmptyDirectories()
@@ -218,6 +225,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Find files
 
+    /// Find first file with name recursively
     func findFirstFile(name: String) -> File? {
         for file in files.recursive {
             if file.name == name {
@@ -227,6 +235,7 @@ public extension Folder {
         return nil
     }
 
+    /// Find all files with name recursively
     func findFiles(name: String) -> [File] {
         var foundFiles = [File]()
         for file in files.recursive {
@@ -237,6 +246,7 @@ public extension Folder {
         return foundFiles
     }
 
+    /// Find all files matching the regex recursively
     func findFiles(regex: String) -> [File] {
         var foundFiles = [File]()
         for file in files.recursive {
@@ -250,6 +260,7 @@ public extension Folder {
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Find folders
 
+    /// Find first folder with name recursively
     func findFirstFolder(name: String) -> Folder? {
         for folder in subfolders.recursive {
             if folder.name == name {
@@ -260,6 +271,7 @@ public extension Folder {
         return nil
     }
 
+    /// Find all folders with name recursively
     func findFolders(name: String) -> [Folder] {
         var foundFolders = [Folder]()
         for folder in subfolders.recursive {
@@ -270,6 +282,7 @@ public extension Folder {
         return foundFolders
     }
 
+    /// Find all folders matching the regex recursively
     func findFolders(regex: String) -> [Folder] {
         var foundFolders = [Folder]()
         for folder in subfolders.recursive {

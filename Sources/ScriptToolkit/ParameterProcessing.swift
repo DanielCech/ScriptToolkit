@@ -47,6 +47,7 @@ extension Optional: OptionalyHavingValue where Wrapped == String {
     }
 }
 
+/// Parameters processing helper
 public func askForMissingParams<T: StringAssignable & OptionalyHavingValue>(_ params: [(Argument<T>, FutureValue<T>)]) throws {
     for paramItem in params {
         // Skip already assigned parameters
