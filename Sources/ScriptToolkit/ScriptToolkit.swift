@@ -64,7 +64,7 @@ public func matches(for regex: String, in text: String) -> [String] {
 }
 
 /// Run shell command in bash
-@discardableResult func shell(_ command: String) -> String {
+@discardableResult public func shell(_ command: String) -> String {
     let task = Process()
     let pipe = Pipe()
 
