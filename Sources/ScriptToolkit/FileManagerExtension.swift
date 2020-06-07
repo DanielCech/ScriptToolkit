@@ -24,13 +24,18 @@ public extension FileManager {
     }
     
     /// Type of location in path
-    func locationKind(for path: String) -> LocationKind {
+    func locationKind(for path: String) -> LocationKind? {
         var isFolder: ObjCBool = false
 
         guard fileExists(atPath: path, isDirectory: &isFolder) else {
-            return .file
+            return nil
         }
         
-        return .folder
+        if isFolder.boolValue {
+            return .folder
+        }
+        else {
+            return .file
+        }
     }
 }
