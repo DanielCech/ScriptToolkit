@@ -62,7 +62,7 @@ public extension NSImage {
     ///  Saves the PNG representation of the current image to the HD.
     ///
     /// - parameter url: The location url to which to write the png file.
-    func savePNGRepresentationToURL(url: URL, onlyChange: Bool) throws {
+    func savePNGRepresentationToURL(url: URL, onlyChange: Bool = true) throws {
         if let png = self.PNGRepresentation {
             if let originalData = try? Data(contentsOf: url) {
                 if onlyChange && (png == originalData) {
