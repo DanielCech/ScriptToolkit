@@ -12,7 +12,7 @@ extension Data {
         var selfIndex = self.startIndex
         var dataIndex = data.startIndex
         
-        while selfIndex <= self.endIndex && dataIndex <= data.endIndex {
+        while selfIndex < self.endIndex && dataIndex < data.endIndex {
             if dataIndex == data.endIndex {
                 return selfIndex - data.count
             }
