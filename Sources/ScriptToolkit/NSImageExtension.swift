@@ -58,6 +58,18 @@ public extension NSImage {
         // Return nil in case something went wrong.
         throw ScriptError.generalError(message: "Unable to resize image")
     }
+    
+    func areImagesSame(firstPNGData: Data, secondPNGData: Data) -> Bool {
+        let sequence = Data([0x6C, 0x65, 0x58, 0x49, 0x66])
+
+        let firstOffset = firstPNGData.indexOf(data: sequence)!
+        let firstSubdata = firstPNGData.subdata(in: firstOffset ..< firstPNGData.endIndex)
+
+        let secondOffset = secondPNGData.indexOf(data: sequence)!
+        let secondSubdata = secondPNGData.subdata(in: secondOffset ..< secondPNGData.endIndex)
+        
+        return firstSubdata == secondSubdata
+    }
 
     ///  Saves the PNG representation of the current image to the HD.
     ///
@@ -65,13 +77,7 @@ public extension NSImage {
     func savePNGRepresentationToURL(url: URL, onlyChange: Bool = true) throws {
         if let pngData = self.PNGRepresentation {
             if let originalData = try? Data(contentsOf: url) {
-                
-                // The beginning of PNG contains some data that may differ - a header
-                let originalSubdata = originalData.subdata(in: 175 ..< originalData.endIndex)
-                let pngSubdata = pngData.subdata(in: 175 ..< pngData.endIndex)
-                
-                
-                if onlyChange && (pngSubdata == originalSubdata) {
+                if onlyChange && areImagesSame(firstPNGData: pngData, secondPNGData: originalData) {
                     return
                 }
             }
