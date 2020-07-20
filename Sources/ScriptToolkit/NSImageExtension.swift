@@ -63,14 +63,20 @@ public extension NSImage {
     ///
     /// - parameter url: The location url to which to write the png file.
     func savePNGRepresentationToURL(url: URL, onlyChange: Bool = true) throws {
-        if let png = self.PNGRepresentation {
+        if let pngData = self.PNGRepresentation {
             if let originalData = try? Data(contentsOf: url) {
-                if onlyChange && (png == originalData) {
+                
+                // The beginning of PNG contains some data that may differ - a header
+                let originalSubdata = originalData.subdata(in: 175 ..< originalData.endIndex)
+                let pngSubdata = pngData.subdata(in: 175 ..< pngData.endIndex)
+                
+                
+                if onlyChange && (pngSubdata == originalSubdata) {
                     return
                 }
             }
             
-            try png.write(to: url, options: .atomicWrite)
+            try pngData.write(to: url, options: .atomicWrite)
         }
     }
     
