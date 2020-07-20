@@ -62,10 +62,10 @@ public extension NSImage {
     func areImagesSame(firstPNGData: Data, secondPNGData: Data) -> Bool {
         let sequence = Data([0x6C, 0x65, 0x58, 0x49, 0x66])
 
-        let firstOffset = firstPNGData.indexOf(data: sequence)!
+        guard let firstOffset = firstPNGData.indexOf(data: sequence) else { return false }
         let firstSubdata = firstPNGData.subdata(in: firstOffset ..< firstPNGData.endIndex)
 
-        let secondOffset = secondPNGData.indexOf(data: sequence)!
+        guard let secondOffset = secondPNGData.indexOf(data: sequence) else { return false }
         let secondSubdata = secondPNGData.subdata(in: secondOffset ..< secondPNGData.endIndex)
         
         return firstSubdata == secondSubdata
