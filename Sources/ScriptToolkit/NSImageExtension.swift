@@ -20,6 +20,15 @@ public extension NSImage {
         return self.size.width
     }
 
+    var CGImage: CGImage {
+        get {
+            let imageData = self.tiffRepresentation!
+            let source = CGImageSourceCreateWithData(imageData as CFData, nil).unsafelyUnwrapped
+            let maskRef = CGImageSourceCreateImageAtIndex(source, Int(0), nil)
+            return maskRef.unsafelyUnwrapped
+        }
+    }
+    
     /// Returns a png representation of the current image.
     var PNGRepresentation: Data? {
         if let tiff = self.tiffRepresentation, let tiffData = NSBitmapImageRep(data: tiff) {
@@ -59,25 +68,54 @@ public extension NSImage {
         throw ScriptError.generalError(message: "Unable to resize image")
     }
     
-    func areImagesSame(firstPNGData: Data, secondPNGData: Data) -> Bool {
-        let sequence = Data([0x6C, 0x65, 0x58, 0x49, 0x66])
-
-        guard let firstOffset = firstPNGData.indexOf(data: sequence) else { return false }
-        let firstSubdata = firstPNGData.subdata(in: firstOffset ..< firstPNGData.endIndex)
-
-        guard let secondOffset = secondPNGData.indexOf(data: sequence) else { return false }
-        let secondSubdata = secondPNGData.subdata(in: secondOffset ..< secondPNGData.endIndex)
+//    func areImagesSame(firstPNGData: Data, secondPNGData: Data) -> Bool {
+//        let sequence = Data([0x6C, 0x65, 0x58, 0x49, 0x66])
+//
+//        guard let firstOffset = firstPNGData.indexOf(data: sequence) else { return false }
+//        let firstSubdata = firstPNGData.subdata(in: firstOffset ..< firstPNGData.endIndex)
+//
+//        guard let secondOffset = secondPNGData.indexOf(data: sequence) else { return false }
+//        let secondSubdata = secondPNGData.subdata(in: secondOffset ..< secondPNGData.endIndex)
+//
+//        return firstSubdata == secondSubdata
+//    }
+    
+    func areImagesSame(leftImage: NSImage, rightImage: NSImage) -> Bool {
+         let width = Int(leftImage.size.width)
+         let height = Int(leftImage.size.height)
+         guard leftImage.size == rightImage.size else {
+             return false
+         }
+        if let cfData1:CFData = leftImage.CGImage.dataProvider?.data,
+            let l = CFDataGetBytePtr(cfData1),
+            let cfData2:CFData = rightImage.CGImage.dataProvider?.data,
+            let r = CFDataGetBytePtr(cfData2) {
+             let bytesPerpixel = 4
+             let firstPixel = 0
+             let lastPixel = (width * height - 1) * bytesPerpixel
+             let range = stride(from: firstPixel, through: lastPixel, by: bytesPerpixel)
+             for pixelAddress in range {
+                 if l.advanced(by: pixelAddress).pointee != r.advanced(by: pixelAddress).pointee ||     //Red
+                    l.advanced(by: pixelAddress + 1).pointee != r.advanced(by: pixelAddress + 1).pointee || //Green
+                    l.advanced(by: pixelAddress + 2).pointee != r.advanced(by: pixelAddress + 2).pointee || //Blue
+                    l.advanced(by: pixelAddress + 3).pointee != r.advanced(by: pixelAddress + 3).pointee  {  //Alpha
+                     print(pixelAddress)
+                     
+                    return false
+                 }
+             }
+         }
         
-        return firstSubdata == secondSubdata
-    }
+        return true
+     }
 
     ///  Saves the PNG representation of the current image to the HD.
     ///
     /// - parameter url: The location url to which to write the png file.
     func savePNGRepresentationToURL(url: URL, onlyChange: Bool = true) throws {
         if let pngData = self.PNGRepresentation {
-            if let originalData = try? Data(contentsOf: url) {
-                if onlyChange && areImagesSame(firstPNGData: pngData, secondPNGData: originalData) {
+            if let originalImage = NSImage(contentsOf: url) {
+                if onlyChange && areImagesSame(leftImage: self, rightImage: originalImage) {
                     return
                 }
             }
