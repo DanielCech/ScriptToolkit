@@ -69,17 +69,22 @@ public extension NSImage {
     }
     
         func areImagesSame(leftImage: NSImage, rightImage: NSImage) -> Bool {
-            guard let leftPNGData = leftImage.pngRepresentation, let rightPNGData = rightImage.pngRepresentation else { return false }
+            let leftTiff = leftImage.tiffRepresentation
+            let rightTiff = rightImage.tiffRepresentation
             
-            let sequence = Data([0x6C, 0x65, 0x58, 0x49, 0x66])
-    
-            guard let leftOffset = leftPNGData.indexOf(data: sequence) else { return false }
-            let leftSubdata = leftPNGData.subdata(in: leftOffset ..< leftPNGData.endIndex)
-    
-            guard let rightOffset = rightPNGData.indexOf(data: sequence) else { return false }
-            let rightSubdata = rightPNGData.subdata(in: rightOffset ..< rightPNGData.endIndex)
-    
-            return leftSubdata == rightSubdata
+            return leftTiff == rightTiff
+            
+//            guard let leftPNGData = leftImage.pngRepresentation, let rightPNGData = rightImage.pngRepresentation else { return false }
+//
+//            let sequence = Data([0x6C, 0x65, 0x58, 0x49, 0x66])
+//
+//            guard let leftOffset = leftPNGData.indexOf(data: sequence) else { return false }
+//            let leftSubdata = leftPNGData.subdata(in: leftOffset ..< leftPNGData.endIndex)
+//
+//            guard let rightOffset = rightPNGData.indexOf(data: sequence) else { return false }
+//            let rightSubdata = rightPNGData.subdata(in: rightOffset ..< rightPNGData.endIndex)
+//
+//            return leftSubdata == rightSubdata
         }
     
 //    func areImagesSame(leftImage: NSImage, rightImage: NSImage) -> Bool {
