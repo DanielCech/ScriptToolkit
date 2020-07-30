@@ -68,54 +68,12 @@ public extension NSImage {
         throw ScriptError.generalError(message: "Unable to resize image")
     }
     
-        func areImagesSame(leftImage: NSImage, rightImage: NSImage) -> Bool {
-            let leftTiff = leftImage.tiffRepresentation
-            let rightTiff = rightImage.tiffRepresentation
-            
-            return leftTiff == rightTiff
-            
-//            guard let leftPNGData = leftImage.pngRepresentation, let rightPNGData = rightImage.pngRepresentation else { return false }
-//
-//            let sequence = Data([0x6C, 0x65, 0x58, 0x49, 0x66])
-//
-//            guard let leftOffset = leftPNGData.indexOf(data: sequence) else { return false }
-//            let leftSubdata = leftPNGData.subdata(in: leftOffset ..< leftPNGData.endIndex)
-//
-//            guard let rightOffset = rightPNGData.indexOf(data: sequence) else { return false }
-//            let rightSubdata = rightPNGData.subdata(in: rightOffset ..< rightPNGData.endIndex)
-//
-//            return leftSubdata == rightSubdata
-        }
-    
-//    func areImagesSame(leftImage: NSImage, rightImage: NSImage) -> Bool {
-//        let width = Int(leftImage.size.width)
-//        let height = Int(leftImage.size.height)
-//
-//        guard leftImage.size == rightImage.size else {
-//            return false
-//        }
-//        var changes = 0
-//
-//        if let cfData1:CFData = leftImage.CGImage.dataProvider?.data,
-//            let l = CFDataGetBytePtr(cfData1),
-//            let cfData2:CFData = rightImage.CGImage.dataProvider?.data,
-//            let r = CFDataGetBytePtr(cfData2) {
-//            let bytesPerpixel = 4
-//            let firstPixel = 0
-//            let lastPixel = (width * height - 1) * bytesPerpixel
-//            let range = stride(from: firstPixel, through: lastPixel, by: bytesPerpixel)
-//            for pixelAddress in range {
-//                if l.advanced(by: pixelAddress).pointee != r.advanced(by: pixelAddress).pointee ||     //Red
-//                    l.advanced(by: pixelAddress + 1).pointee != r.advanced(by: pixelAddress + 1).pointee || //Green
-//                    l.advanced(by: pixelAddress + 2).pointee != r.advanced(by: pixelAddress + 2).pointee || //Blue
-//                    l.advanced(by: pixelAddress + 3).pointee != r.advanced(by: pixelAddress + 3).pointee  {  //Alpha
-//                    changes += 1
-//                }
-//            }
-//        }
-//
-//        return changes < 100
-//    }
+    func areImagesSame(leftImage: NSImage, rightImage: NSImage) -> Bool {
+        let leftTiff = leftImage.tiffRepresentation
+        let rightTiff = rightImage.tiffRepresentation
+        
+        return leftTiff == rightTiff
+    }
     
     ///  Saves the PNG representation of the current image to the HD.
     ///
