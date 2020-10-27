@@ -9,14 +9,14 @@ import Foundation
 
 extension Data {
     func indexOf(data: Data) -> Data.Index? {
-        var selfIndex = self.startIndex
+        var selfIndex = startIndex
         var dataIndex = data.startIndex
-        
-        while selfIndex < self.endIndex && dataIndex < data.endIndex {
+
+        while selfIndex < endIndex, dataIndex < data.endIndex {
             if dataIndex == data.endIndex {
                 return selfIndex - data.count
             }
-            
+
             if self[selfIndex] == data[dataIndex] {
                 dataIndex += 1
             }
@@ -25,7 +25,7 @@ extension Data {
             }
             selfIndex += 1
         }
-        
+
         return nil
     }
 }

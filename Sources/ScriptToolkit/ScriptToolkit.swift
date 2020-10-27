@@ -5,32 +5,29 @@
 //  Created by Dan Cech on 15.02.2019.
 //
 
-import Foundation
 import Files
-import SwiftShell
+import Foundation
 import Moderator
+import SwiftShell
 
 public struct ScriptToolkit {
-
     // MARK: - Setup of absolute paths
-    
+
     /// PDFCrop - part of TeXlive distribution
     public static let pdfCropPath = "/usr/local/bin/pdfcrop"
-    
+
     /// FFMPEG toolkit
     public static let ffmpegPath = "/usr/local/bin/ffmpeg"
-    
+
     /// Sound eXchange tool for sound manipulation
     public static let soxPath = "/usr/local/bin/sox"
-    
+
     /// ImageMagick
     public static let convertPath = "/usr/local/bin/convert"
-    
+
     /// Short audio with silence
     public static let silenceFilePath = "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav"
 
-
-    
     public static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYY-MM-dd"
@@ -57,7 +54,8 @@ public func matches(for regex: String, in text: String) -> [String] {
         return results.map {
             String(text[Range($0.range, in: text)!])
         }
-    } catch let error {
+    }
+    catch {
         print("invalid regex: \(error.localizedDescription)")
         return []
     }
@@ -78,6 +76,3 @@ public func matches(for regex: String, in text: String) -> [String] {
 
     return output
 }
-
-
-

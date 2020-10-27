@@ -5,13 +5,12 @@
 //  Created by Dan Cech on 15.02.2019.
 //
 
-import Foundation
 import AppKit
 import Files
+import Foundation
 import SwiftShell
 
 public extension File {
-
     /// Appending suffix to file name
     func nameWithSuffix(_ suffix: String) -> String {
         if let unwrappedExtension = `extension` {
@@ -22,10 +21,9 @@ public extension File {
         }
     }
 
-    
     /// Create file duplicate
     @discardableResult func createDuplicate(withName newName: String, keepExtension: Bool = true, overwrite: Bool = true) throws -> File? {
-        if !overwrite && FileManager.default.fileExists(atPath: newName) { return nil }
+        if !overwrite, FileManager.default.fileExists(atPath: newName) { return nil }
 
         guard let parent = parent else {
             throw ScriptError.renameFailed(message: newName)
@@ -48,28 +46,25 @@ public extension File {
         do {
             try FileManager.default.copyItem(atPath: path, toPath: newPath)
             return try File(path: newPath)
-        } catch {
+        }
+        catch {
             throw ScriptError.renameFailed(message: newPath)
         }
     }
 
-    
     /// File modification date
-    func modificationDate() throws -> Date  {
-
+    func modificationDate() throws -> Date {
         let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
         let modificationDate = fileAttributes[.modificationDate] as! Date
 
         return modificationDate
     }
 
-
     /// Tag file with date/time/version signature
     func tag(copy: Bool) throws {
         let date = try modificationDate()
         let suffix = ScriptToolkit.dateFormatter.string(from: date)
         for letter in "abcdefghijklmnopqrstuvwxyz" {
-
             let file = try File(path: path)
             let newPath = (file.parent?.path ?? "./")
             let newName = file.nameExcludingExtension + "(\(suffix + String(letter)))" + "." + (file.extension ?? "")
@@ -86,7 +81,6 @@ public extension File {
         }
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Photo Processing
 
@@ -96,7 +90,6 @@ public extension File {
         let numberString = nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
         var lastMaximum: Int?
         if let number = Int(numberString) {
-
             var moved = false
             for folderRecord in folderRecords {
                 if let firstIndex = folderRecord.1.first, let lastIndex = folderRecord.1.last, number >= firstIndex, number <= lastIndex {
@@ -124,14 +117,13 @@ public extension File {
     // MARK: - Resize image
 
     /// Image resizing
-    @discardableResult func resizeImage(newName: String, size: CGSize, overwrite: Bool = true) throws -> File  {
-        let image: NSImage? = NSImage(contentsOfFile: self.path)
+    @discardableResult func resizeImage(newName: String, size: CGSize, overwrite _: Bool = true) throws -> File {
+        let image: NSImage? = NSImage(contentsOfFile: path)
         let newImage = image.map { try? $0.copy(size: size) } ?? nil
         if let unwrappedNewImage = newImage {
-            
             try unwrappedNewImage.savePNGRepresentationToURL(url: URL(fileURLWithPath: newName))
         }
-        
+
         return try File(path: newName)
     }
 
@@ -184,7 +176,7 @@ public extension File {
         runAndDebug(ScriptToolkit.soxPath, path, "-r", "44100", "--channels", "2", newName)
         return try File(path: newName)
     }
-    
+
     /// Conversion to .m4a
     @discardableResult func convertToM4A(newName: String, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
@@ -218,10 +210,10 @@ public extension File {
 
         if !overwrite {
             let outputPath = outputFolder.path
-            if FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName50))
-                && FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName75))
-                && FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName90))
-                && FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName100)) { return }
+            if FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName50)),
+                FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName75)),
+                FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName90)),
+                FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName100)) { return }
         }
 
         print(name + ":")
@@ -313,5 +305,4 @@ public extension File {
 
         return try File(path: newName)
     }
-
 }

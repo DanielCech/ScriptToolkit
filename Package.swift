@@ -9,7 +9,8 @@ let package = Package(
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "ScriptToolkit",
-            targets: ["ScriptToolkit"]),
+            targets: ["ScriptToolkit"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/JohnSundell/Files.git", .branch("master")),
@@ -21,9 +22,11 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "ScriptToolkit",
-            dependencies: ["Files", "SwiftShell", "Moderator"]),
+            dependencies: ["Files", "SwiftShell", "Moderator"]
+        ),
         .testTarget(
             name: "ScriptToolkitTests",
-            dependencies: ["ScriptToolkit"]),
+            dependencies: ["ScriptToolkit"]
+        )
     ]
 )

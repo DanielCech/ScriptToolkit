@@ -5,8 +5,8 @@
 //  Created by Daniel Cech on 05/04/2020.
 //
 
-import Foundation
 import Files
+import Foundation
 
 public extension FileManager {
     /// Does the location exist?
@@ -22,7 +22,7 @@ public extension FileManager {
         case .folder: return isFolder.boolValue
         }
     }
-    
+
     /// Type of location in path
     func locationKind(for path: String) -> LocationKind? {
         var isFolder: ObjCBool = false
@@ -30,7 +30,7 @@ public extension FileManager {
         guard fileExists(atPath: path, isDirectory: &isFolder) else {
             return nil
         }
-        
+
         if isFolder.boolValue {
             return .folder
         }

@@ -1,6 +1,4 @@
-import XCTest
 @testable import ScriptToolkit
+import XCTest
 
-final class ScriptToolkitTests: XCTestCase {
-    
-}
+final class ScriptToolkitTests: XCTestCase {}

@@ -49,8 +49,8 @@ extension ScriptError: PrintableError {
 
         case let .moreInfoNeeded(message):
             errorDescription = "more info needed: \(message)"
-            
-        case .renameFailed(let message):
+
+        case let .renameFailed(message):
             errorDescription = "rename failed: \(message)"
         }
 
@@ -58,9 +58,8 @@ extension ScriptError: PrintableError {
     }
 }
 
-
 extension ArgumentError: PrintableError {
     public var errorDescription: String {
-        return "💥 error: \(errormessage)"
+        "💥 error: \(errormessage)"
     }
 }

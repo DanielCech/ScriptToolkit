@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import SwiftShell
 import Moderator
+import SwiftShell
 
 public protocol StringAssignable {
     mutating func assign(value: String) throws
@@ -30,20 +30,19 @@ extension Optional: StringAssignable where Wrapped == String {
     }
 }
 
-
 public protocol OptionalyHavingValue {
     func hasValue() -> Bool
 }
 
 extension Int: OptionalyHavingValue {
     public func hasValue() -> Bool {
-        return true
+        true
     }
 }
 
 extension Optional: OptionalyHavingValue where Wrapped == String {
     public func hasValue() -> Bool {
-        return self != .none
+        self != .none
     }
 }
 
