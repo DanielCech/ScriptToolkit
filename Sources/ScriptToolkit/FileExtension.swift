@@ -81,7 +81,6 @@ public extension File {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Photo Processing
 
     /// Moving file to appropriate folder during photo processing
@@ -113,7 +112,6 @@ public extension File {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Resize image
 
     /// Image resizing
@@ -141,7 +139,6 @@ public extension File {
         try resizeImage(newName: res3name, size: CGSize(width: 3 * width, height: 3 * height), overwrite: overwrite)
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Audio Processing
 
     /// Slow down audio
@@ -271,7 +268,6 @@ public extension File {
         try normWavFile.delete()
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Video Processing
 
     /// Video reduction to smaller size and quality
@@ -285,7 +281,6 @@ public extension File {
         return try File(path: newName)
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - PDF
 
     /// Crop margins from PDF

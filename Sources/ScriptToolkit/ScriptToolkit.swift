@@ -35,7 +35,6 @@ public struct ScriptToolkit {
     }()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // MARK: - Helpers
 
 /// Running command line tool with debug logs

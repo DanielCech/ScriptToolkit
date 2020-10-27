@@ -41,7 +41,6 @@ public extension Folder {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Modification date
 
     /// Get folder modification date
@@ -52,7 +51,6 @@ public extension Folder {
         return modificationDate
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Tag folder
 
     /// Tag folder with date/time/version signature
@@ -80,7 +78,6 @@ public extension Folder {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Flatten folder structure
 
     /// Make directory structure flat - use longer file names
@@ -109,7 +106,6 @@ public extension Folder {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Sort Photos
 
     /// Get photo metadata
@@ -200,7 +196,6 @@ public extension Folder {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Remove Empty Directories
 
     /// Remove empty subdirectories
@@ -215,7 +210,6 @@ public extension Folder {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Find files
 
     /// Find first file with name recursively
@@ -250,7 +244,6 @@ public extension Folder {
         return foundFiles
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // MARK: - Find folders
 
     /// Find first folder with name recursively
