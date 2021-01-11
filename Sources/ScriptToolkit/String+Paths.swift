@@ -28,6 +28,10 @@ public extension String {
     var pathComponents: [String] {
         (self as NSString).pathComponents
     }
+    
+    var isAbsolutePath: Bool {
+        (self as NSString).isAbsolutePath
+    }
 
     func appendingPathComponent(path: String) -> String {
         let nsString = self as NSString
