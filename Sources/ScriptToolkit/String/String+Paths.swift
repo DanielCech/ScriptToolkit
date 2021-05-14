@@ -32,6 +32,10 @@ public extension String {
     var isAbsolutePath: Bool {
         (self as NSString).isAbsolutePath
     }
+    
+    var withoutEscapes: String {
+        replacingOccurrences(of: "\\", with: "")
+    }
 
     func appendingPathComponent(path: String) -> String {
         let nsString = self as NSString

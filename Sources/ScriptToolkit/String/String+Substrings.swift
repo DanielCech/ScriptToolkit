@@ -17,6 +17,8 @@ public extension String {
 // MARK: - Subscripts
 
 public extension String {
+    subscript(offset: Int) -> Character { self[index(startIndex, offsetBy: offset)] }
+    
     subscript(value: CountableClosedRange<Int>) -> Substring {
         self[index(at: value.lowerBound) ... index(at: value.upperBound)]
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Data {
+public extension Data {
     func indexOf(data: Data) -> Data.Index? {
         var selfIndex = startIndex
         var dataIndex = data.startIndex

@@ -75,3 +75,10 @@ public func matches(for regex: String, in text: String) -> [String] {
 
     return output
 }
+
+/// Detailed debug in string
+public func dumpString(_ something: Any) -> String {
+    var dumped = String()
+    dump(something, to: &dumped)
+    return dumped
+}

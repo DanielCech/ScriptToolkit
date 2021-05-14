@@ -1,146 +1,18 @@
 //
-//  File.swift
-//  ScriptToolkit
+//  File+AudioProcessing.swift
+//  Toolkit
 //
-//  Created by Dan Cech on 15.02.2019.
+//  Created by Daniel Cech on 14/05/2021.
 //
 
-import AppKit
-import Files
 import Foundation
+import Files
 import SwiftShell
 
+
+// MARK: - Audio Processing
+
 public extension File {
-    /// Appending suffix to file name
-    func nameWithSuffix(_ suffix: String) -> String {
-        if let unwrappedExtension = `extension` {
-            return nameExcludingExtension + suffix + "." + unwrappedExtension
-        }
-        else {
-            return nameExcludingExtension + suffix
-        }
-    }
-
-    /// Create file duplicate
-    @discardableResult func createDuplicate(withName newName: String, keepExtension: Bool = true, overwrite: Bool = true) throws -> File? {
-        if !overwrite, FileManager.default.fileExists(atPath: newName) { return nil }
-
-        guard let parent = parent else {
-            throw ScriptError.renameFailed(message: newName)
-        }
-
-        var newName = newName
-
-        if keepExtension {
-            if let `extension` = `extension` {
-                let extensionString = ".\(`extension`)"
-
-                if !newName.hasSuffix(extensionString) {
-                    newName += extensionString
-                }
-            }
-        }
-
-        let newPath = parent.path + newName
-
-        do {
-            try FileManager.default.copyItem(atPath: path, toPath: newPath)
-            return try File(path: newPath)
-        }
-        catch {
-            throw ScriptError.renameFailed(message: newPath)
-        }
-    }
-
-    /// File modification date
-    func modificationDate() throws -> Date {
-        let fileAttributes = try FileManager.default.attributesOfItem(atPath: path) as [FileAttributeKey: Any]
-        let modificationDate = fileAttributes[.modificationDate] as! Date
-
-        return modificationDate
-    }
-
-    /// Tag file with date/time/version signature
-    func tag(copy: Bool) throws {
-        let date = try modificationDate()
-        let suffix = ScriptToolkit.dateFormatter.string(from: date)
-        for letter in "abcdefghijklmnopqrstuvwxyz" {
-            let file = try File(path: path)
-            let newPath = (file.parent?.path ?? "./")
-            let newName = file.nameExcludingExtension + "(\(suffix + String(letter)))" + "." + (file.extension ?? "")
-
-            if !FileManager.default.fileExists(atPath: newPath + newName) {
-                if copy {
-                    try file.createDuplicate(withName: newName)
-                }
-                else {
-                    try file.rename(to: newName)
-                }
-                return
-            }
-        }
-    }
-
-    // MARK: - Photo Processing
-
-    /// Moving file to appropriate folder during photo processing
-    func incorporateFile(using folderRecords: [(Folder, [Int])]) throws {
-        print("\(path)")
-        let numberString = nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
-        var lastMaximum: Int?
-        if let number = Int(numberString) {
-            var moved = false
-            for folderRecord in folderRecords {
-                if let firstIndex = folderRecord.1.first, let lastIndex = folderRecord.1.last, number >= firstIndex, number <= lastIndex {
-                    try move(to: folderRecord.0)
-                    moved = true
-                    break
-                }
-
-                if let unwrappedLastMaximum = lastMaximum, let firstIndex = folderRecord.1.first, unwrappedLastMaximum <= number, firstIndex >= number {
-                    try move(to: folderRecord.0)
-                    moved = true
-                    break
-                }
-
-                lastMaximum = folderRecord.1.last
-            }
-            if !moved { print("  unable to process - no appropriate folder") }
-        }
-        else {
-            print("  unable to process")
-        }
-    }
-
-    // MARK: - Resize image
-
-    /// Image resizing
-    @discardableResult func resizeImage(newName: String, size: CGSize, overwrite _: Bool = true) throws -> File {
-        let image: NSImage? = NSImage(contentsOfFile: path)
-        let newImage = image.map { try? $0.copy(size: size) } ?? nil
-        if let unwrappedNewImage = newImage {
-            try unwrappedNewImage.savePNGRepresentationToURL(url: URL(fileURLWithPath: newName))
-        }
-
-        return try File(path: newName)
-    }
-
-    /// Create three sizes of image for iOS asset
-    func resizeAt123x(width: Int, height: Int, outputDir: Folder, overwrite: Bool = true) throws {
-        print(name)
-
-        let res1name = outputDir.path.appendingPathComponent(path: name)
-        try resizeImage(newName: res1name, size: CGSize(width: width, height: height), overwrite: overwrite)
-
-        let res2name = outputDir.path.appendingPathComponent(path: nameExcludingExtension + "@2x." + (self.extension ?? ""))
-        try resizeImage(newName: res2name, size: CGSize(width: 2 * width, height: 2 * height), overwrite: overwrite)
-
-        let res3name = outputDir.path.appendingPathComponent(path: nameExcludingExtension + "@3x." + (self.extension ?? ""))
-        try resizeImage(newName: res3name, size: CGSize(width: 3 * width, height: 3 * height), overwrite: overwrite)
-    }
-
-    // MARK: - Audio Processing
-
     /// Slow down audio
     @discardableResult func slowDownAudio(newName: String, percent: Float, overwrite: Bool = true) throws -> File {
         if FileManager.default.fileExists(atPath: newName) {
@@ -267,37 +139,5 @@ public extension File {
         try silencedFile100.delete()
         try normWavFile.delete()
     }
-
-    // MARK: - Video Processing
-
-    /// Video reduction to smaller size and quality
-    @discardableResult func reduceVideo(newName: String, overwrite: Bool = true) throws -> File {
-        if FileManager.default.fileExists(atPath: newName) {
-            if !overwrite { return try File(path: newName) }
-            try FileManager.default.removeItem(atPath: newName)
-        }
-
-        run(ScriptToolkit.ffmpegPath, "-i", path, "-vf", "scale=iw/2:ih/2", newName)
-        return try File(path: newName)
-    }
-
-    // MARK: - PDF
-
-    /// Crop margins from PDF
-    @discardableResult func cropPDF(newName: String, insets: NSEdgeInsets, overwrite: Bool = true) throws -> File {
-        if FileManager.default.fileExists(atPath: newName) {
-            if !overwrite { return try File(path: newName) }
-            try FileManager.default.removeItem(atPath: newName)
-        }
-
-        let left = Int(insets.left)
-        let top = Int(insets.top)
-        let bottom = Int(insets.bottom)
-        let right = Int(insets.right)
-
-        main.currentdirectory = parent!.path
-        run(bash: "\(ScriptToolkit.pdfCropPath) --margins '\(left) \(top) \(right) \(bottom)' \"\(name)\" \"\(newName)\"")
-
-        return try File(path: newName)
-    }
+    
 }
