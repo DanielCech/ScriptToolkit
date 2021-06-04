@@ -125,8 +125,17 @@ public extension Folder {
         }
 
         if subfolders.count() == 0, files.count() == 0 {
-            print("removed: \(path)")
+            logger.print("removed: \(path)")
             try delete()
+        }
+    }
+    
+    func createFolderIfNotExists(named name: String) throws -> Folder {
+        if self.containsSubfolder(named: name) {
+            return try self.subfolder(named: name)
+        }
+        else {
+            return try self.createSubfolder(named: name)
         }
     }
 }

@@ -21,7 +21,7 @@ public extension File {
                 play
             end tell
             """
-            .replacingOccurrences(of: "{{file}}", with: self.path)
+            .replacingOccurrences(of: "{{file}}", with: self.path.replacingOccurrences(of: " ", with: "%20"))
         
         let script = NSAppleScript(source: scriptSource)
         script?.executeAndReturnError(nil)

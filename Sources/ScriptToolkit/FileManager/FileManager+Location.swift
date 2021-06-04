@@ -52,4 +52,18 @@ public extension FileManager {
         let exists = FileManager.default.fileExists(atPath: atPath, isDirectory: &isDirectory)
         return exists && isDirectory.boolValue
     }
+    
+    /// Test for folder existence with URL parameter
+    func fileExists(atUrl url: URL) -> Bool {
+        var isDirectory: ObjCBool = false
+        let exists = fileExists(atPath: url.path, isDirectory: &isDirectory)
+        return exists && !isDirectory.boolValue
+    }
+
+    /// Test for folder existence with path parameter
+    func fileExists(atPath: String) -> Bool {
+        var isDirectory: ObjCBool = false
+        let exists = FileManager.default.fileExists(atPath: atPath, isDirectory: &isDirectory)
+        return exists && !isDirectory.boolValue
+    }
 }

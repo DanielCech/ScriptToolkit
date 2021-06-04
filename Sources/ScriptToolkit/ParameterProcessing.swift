@@ -53,7 +53,7 @@ public func askForMissingParams<T: StringAssignable & OptionalyHavingValue>(_ pa
         if paramItem.1.value.hasValue() { continue }
 
         let paramTitle = paramItem.0.usage?.title ?? ""
-        print("❓ \(paramTitle):")
+        logger.print(prompt: "❓", text: "\(paramTitle):")
         let input = readLine() ?? ""
         try paramItem.1.value.assign(value: input)
     }

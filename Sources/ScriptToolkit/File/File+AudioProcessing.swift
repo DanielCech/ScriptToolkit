@@ -85,44 +85,44 @@ public extension File {
                 FileManager.default.fileExists(atPath: outputPath.appendingPathComponent(path: fileName100)) { return }
         }
 
-        print(name + ":")
+        logger.print(name + ":")
 
         let originalWavFile: File
         if let ext = `extension`, ext.lowercased() != "wav" {
-            print("  Converting to wav")
+            logger.print("  Converting to wav")
             originalWavFile = try convertToWav(newName: inputFolder.path.appendingPathComponent(path: "wav-file.wav"))
         }
         else {
             originalWavFile = self
         }
 
-        print("  Normalizing sample rate")
+        logger.print("  Normalizing sample rate")
         let normWavFile = try originalWavFile.normalizeSampleRate(newName: inputFolder.path.appendingPathComponent(path: "wav-file-norm.wav"))
 
-        print("  Converting to 50% speed")
+        logger.print("  Converting to 50% speed")
         let file50 = try normWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-50.wav"), percent: 0.5)
-        print("  Converting to 75% speed")
+        logger.print("  Converting to 75% speed")
         let file75 = try normWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-75.wav"), percent: 0.75)
-        print("  Converting to 90% speed")
+        logger.print("  Converting to 90% speed")
         let file90 = try normWavFile.slowDownAudio(newName: inputFolder.path.appendingPathComponent(path: "tempo-90.wav"), percent: 0.9)
 
-        print("  Adding initial silence to 50% speed file")
+        logger.print("  Adding initial silence to 50% speed file")
         let silencedFile50 = try file50.addSilence(newName: inputFolder.path.appendingPathComponent(path: "silence-50.wav"))
-        print("  Adding initial silence to 75% speed file")
+        logger.print("  Adding initial silence to 75% speed file")
         let silencedFile75 = try file75.addSilence(newName: inputFolder.path.appendingPathComponent(path: "silence-75.wav"))
-        print("  Adding initial silence to 90% speed file")
+        logger.print("  Adding initial silence to 90% speed file")
         let silencedFile90 = try file90.addSilence(newName: inputFolder.path.appendingPathComponent(path: "silence-90.wav"))
-        print("  Adding initial silence to 100% speed file")
+        logger.print("  Adding initial silence to 100% speed file")
         let silencedFile100 = try normWavFile.addSilence(newName: inputFolder.path.appendingPathComponent(path: "silence-100.wav"))
 
-        print("  Converting to M4A")
+        logger.print("  Converting to M4A")
         let silencedM4AFile50 = try silencedFile50.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName50))
         let silencedM4AFile75 = try silencedFile75.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName75))
         let silencedM4AFile90 = try silencedFile90.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName90))
         let silencedM4AFile100 = try silencedFile100.convertToM4A(newName: inputFolder.path.appendingPathComponent(path: fileName100))
 
         // Move result to output dir
-        print("  Moving to destination folder")
+        logger.print("  Moving to destination folder")
         try silencedM4AFile50.move(to: outputFolder)
         try silencedM4AFile75.move(to: outputFolder)
         try silencedM4AFile90.move(to: outputFolder)

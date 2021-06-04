@@ -17,7 +17,7 @@ public extension Folder {
     func exifTool(byCameraModel: Bool, processM4V: Bool) throws {
         let inputFolder = try Folder(path: path)
 
-        print("📷 Processing EXIFtool...")
+        logger.print(prompt: "📷", text: "Processing EXIFtool...")
 
         if byCameraModel {
             // Process JPG dirs using exiftool
@@ -73,7 +73,7 @@ public extension Folder {
 
     /// Organize photos by metadata
     func organizePhotos() throws {
-        print("📂 Organizing...")
+        logger.print(prompt: "📂", text: "Organizing...")
 
         var folderRecords = [(Folder, [Int])]()
 

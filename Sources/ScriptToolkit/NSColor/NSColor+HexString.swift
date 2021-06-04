@@ -15,11 +15,11 @@ public extension NSColor {
         let scanner = Scanner(string: hexString)
 
         if hexString.hasPrefix("#") {
-            scanner.scanLocation = 1
+            scanner.currentIndex = scanner.string.index(after: scanner.string.startIndex)
         }
 
-        var color: UInt32 = 0
-        guard scanner.scanHexInt32(&color) else { return nil }
+        var color: UInt64 = 0
+        guard scanner.scanHexInt64(&color) else { return nil }
 
         let mask = 0x0000_00FF
         let r = Int(color >> 16) & mask

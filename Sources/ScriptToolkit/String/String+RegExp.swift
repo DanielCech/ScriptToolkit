@@ -38,4 +38,15 @@ public extension String {
             withTemplate: template
         )
     }
+    
+    func stringLookupMatch(text: String) throws -> Bool {
+        let textPart = Array(text)
+            .map { String($0) }
+            .joined(separator: ".*")
+        let regExp = "^.*" + textPart + ".*$"
+        
+        print(regExp)
+        
+        return try !regExpMatches(lineRegExp: regExp).isEmpty
+    }
 }

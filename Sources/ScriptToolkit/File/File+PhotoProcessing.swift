@@ -15,7 +15,7 @@ import SwiftShell
 public extension File {
     /// Moving file to appropriate folder during photo processing
     func incorporateFile(using folderRecords: [(Folder, [Int])]) throws {
-        print("\(path)")
+        logger.print("\(path)")
         let numberString = nameExcludingExtension.replacingOccurrences(of: "IMG_", with: "")
         var lastMaximum: Int?
         if let number = Int(numberString) {
@@ -35,10 +35,10 @@ public extension File {
 
                 lastMaximum = folderRecord.1.last
             }
-            if !moved { print("  unable to process - no appropriate folder") }
+            if !moved { logger.print("  unable to process - no appropriate folder") }
         }
         else {
-            print("  unable to process")
+            logger.print("  unable to process")
         }
     }
 }

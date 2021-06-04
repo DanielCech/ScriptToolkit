@@ -79,7 +79,7 @@ public extension NSImage {
         if let pngData = pngRepresentation {
             if let originalImage = NSImage(contentsOf: url) {
                 if onlyChange, areImagesSame(leftImage: self, rightImage: originalImage) {
-                    print("    Keeping original file - no change")
+                    logger.print("    Keeping original file - no change")
                     return
                 }
             }

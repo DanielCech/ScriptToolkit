@@ -26,7 +26,7 @@ public extension File {
 
     /// Create three sizes of image for iOS asset
     func resizeAt123x(width: Int, height: Int, outputDir: Folder, overwrite: Bool = true) throws {
-        print(name)
+        logger.print(name)
 
         let res1name = outputDir.path.appendingPathComponent(path: name)
         try resizeImage(newName: res1name, size: CGSize(width: width, height: height), overwrite: overwrite)
