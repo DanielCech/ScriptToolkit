@@ -20,11 +20,29 @@
         }
       },
       {
+        "package": "Rainbow",
+        "repositoryURL": "https://github.com/onevcat/Rainbow.git",
+        "state": {
+          "branch": null,
+          "revision": "7c3dad0e918534c6d19dd1048bde734c246d05fe",
+          "version": "4.0.0"
+        }
+      },
+      {
         "package": "SwiftShell",
         "repositoryURL": "https://github.com/kareman/SwiftShell.git",
         "state": {
           "branch": "master",
           "revision": "99680b2efc7c7dbcace1da0b3979d266f02e213c",
+          "version": null
+        }
+      },
+      {
+        "package": "Yaml",
+        "repositoryURL": "https://github.com/behrang/YamlSwift.git",
+        "state": {
+          "branch": "master",
+          "revision": "287f5cab7da0d92eb947b5fd8151b203ae04a9a3",
           "version": null
         }
       }
