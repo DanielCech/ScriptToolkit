@@ -15,14 +15,16 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/JohnSundell/Files.git", .branch("master")),
         .package(url: "https://github.com/kareman/SwiftShell.git", .branch("master")),
-        .package(url: "https://github.com/DanielCech/Moderator.git", .branch("master"))
+        .package(url: "https://github.com/DanielCech/Moderator.git", .branch("master")),
+        .package(url: "https://github.com/onevcat/Rainbow.git", from: "4.0.0"),
+        .package(name: "Yaml", url: "https://github.com/behrang/YamlSwift.git", .branch("master"))
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "ScriptToolkit",
-            dependencies: ["Files", "SwiftShell", "Moderator"]
+            dependencies: ["Files", "SwiftShell", "Moderator", "Rainbow", "Yaml"]
         ),
         .testTarget(
             name: "ScriptToolkitTests",
