@@ -46,4 +46,12 @@ public extension String {
         let nsString = self as NSString
         return nsString.appendingPathExtension(ext)
     }
+    
+    /// Returns the path without trailing slash
+    func withoutSlash() -> String {
+        if last == "/" {
+            return String(prefix(count - 1))
+        }
+        return self
+    }
 }
