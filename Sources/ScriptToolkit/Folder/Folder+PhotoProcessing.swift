@@ -22,19 +22,19 @@ public extension Folder {
         if byCameraModel {
             // Process JPG dirs using exiftool
             for dir in inputFolder.subfolders {
-                run("/usr/local/bin/exiftool", "-Directory<Model", "-d", "%Y-%m-%d \(dir.name)", dir.path)
+                run(ScriptToolkit.exifToolPath, "-Directory<Model", "-d", "%Y-%m-%d \(dir.name)", dir.path)
             }
 
             // Process JPG using exiftool
             for file in inputFolder.files {
-                run("/usr/local/bin/exiftool", "-Directory<Model", "-d", "%Y-%m-%d", file.path)
+                run(ScriptToolkit.exifToolPath, "-Directory<Model", "-d", "%Y-%m-%d", file.path)
             }
             return
         }
 
         // Process JPG dirs using exiftool
         for dir in inputFolder.subfolders {
-            run("/usr/local/bin/exiftool", "-Directory<DateTimeOriginal", "-d", "%Y-%m-%d \(dir.name)", dir.path)
+            run(ScriptToolkit.exifToolPath, "-Directory<DateTimeOriginal", "-d", "%Y-%m-%d \(dir.name)", dir.path)
         }
 
         var originalFolders = inputFolder
@@ -48,21 +48,21 @@ public extension Folder {
             for file in folder.files.includingHidden {
                 switch file.extension?.lowercased() ?? "" {
                 case "jpg", "jpeg":
-                    run("/usr/local/bin/exiftool", "-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
+                    run(ScriptToolkit.exifToolPath, "-Directory<DateTimeOriginal", "-d", "%Y-%m-%d", file.path)
 
                 case "png":
-                    run("/usr/local/bin/exiftool", "-Directory<DateCreated", "-d", "%Y-%m-%d", file.path)
+                    run(ScriptToolkit.exifToolPath, "-Directory<DateCreated", "-d", "%Y-%m-%d", file.path)
 
                 case "m4v":
                     if !processM4V {
-                        run("/usr/local/bin/exiftool", "-Directory<ContentCreateDate", "-d", "%Y-%m-%d", file.path)
+                        run(ScriptToolkit.exifToolPath, "-Directory<ContentCreateDate", "-d", "%Y-%m-%d", file.path)
                     }
 
                 case "mp4":
-                    run("/usr/local/bin/exiftool", "-Directory<FileAccessDate", "-d", "%Y-%m-%d", file.path)
+                    run(ScriptToolkit.exifToolPath, "-Directory<FileAccessDate", "-d", "%Y-%m-%d", file.path)
 
                 case "mov":
-                    run("/usr/local/bin/exiftool", "-Directory<CreationDate", "-d", "%Y-%m-%d", file.path)
+                    run(ScriptToolkit.exifToolPath, "-Directory<CreationDate", "-d", "%Y-%m-%d", file.path)
 
                 default:
                     break

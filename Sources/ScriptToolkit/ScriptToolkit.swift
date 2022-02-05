@@ -25,6 +25,9 @@ public struct ScriptToolkit {
 
     /// ImageMagick
     public static let convertPath = "/usr/local/bin/convert"
+    
+    /// EXIFtool
+    public static let exifToolPath = "/opt/homebrew/bin/exiftool"
 
     /// Short audio with silence
     public static let silenceFilePath = "/Users/dan/Documents/[Development]/[Projects]/SwiftScripts/practise/silence.wav"
